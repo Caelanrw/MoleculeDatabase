@@ -19,6 +19,9 @@ public class Molecule {
         numElements= new int [119];
         pt.put("C",6);
         pt.put("H",1);
+        pt.put("N",7);
+        pt.put("O",8);
+        pt.put("S",16);
         //Creates dictionary of elements, want to add more to this & relocate this variable outside of molecule class to save space.
         int f,l;
 
@@ -36,8 +39,9 @@ public class Molecule {
             }
             while ((line = reader.readLine()) != null) {
                 numEdges++; //Counts # of edges
-                f = Integer.parseInt(line.substring(0,1)); //Reads first atom in edge
-                l = Integer.parseInt(line.substring(2)); //Reads second atom in edge
+                int beginIndex = line.indexOf(' ')+1;
+                f = Integer.parseInt(line.substring(0,beginIndex-1)); //Reads first atom in edge
+                l = Integer.parseInt(line.substring(beginIndex)); //Reads second atom in edge
                 atomArrayList.get(f).addEdge(atomArrayList.get(l)); //Marks edge for first atom
                 atomArrayList.get(l).addEdge(atomArrayList.get(f)); //Marks edge for second atom
                 System.out.println(line); // TODO: we can change this to parse the file rather than print it
