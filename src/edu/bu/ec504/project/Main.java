@@ -6,5 +6,4 @@ public class Main {
         Molecule tester = new Molecule(filename);
     }
 
-
 }

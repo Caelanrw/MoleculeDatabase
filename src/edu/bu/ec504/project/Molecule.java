@@ -3,7 +3,6 @@ package edu.bu.ec504.project;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class Molecule {
 
@@ -24,17 +23,28 @@ public class Molecule {
         }
     }
 
+    public void saveData(String s){
+
+    }
+
 
     // TODO: add molecule to the database
 
 
     //FIELDS
 
-    /**
-     * saves element as the key and the quantity as the value
-     */
+    String moleculeName;
 
-    HashMap <Character ,Integer>map = new HashMap<>();
+    int numAtoms;
+
+    int numEdges;
+
+    // numDegrees for each atom;
+
+    int[] numElements; //stores quantity of each element
+
+
+
 
 }
 
