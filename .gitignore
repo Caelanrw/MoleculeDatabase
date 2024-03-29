@@ -29,7 +29,8 @@ bin/
 .DS_Store
 
 .idea/
-md.jar
+*.jar
+*.db
 
 
 
