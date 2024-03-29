@@ -3,6 +3,9 @@ package edu.bu.ec504.project;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Molecule {
 
@@ -12,10 +15,31 @@ public class Molecule {
     //Current implementation is in the constructor
 
     public Molecule(String MoleculeFile){
+        //Init values
+        numElements= new int [119];
+        pt.put("C",6);
+        pt.put("H",1);
+        //Creates dictionary of elements, want to add more to this & relocate this variable outside of molecule class to save space.
+        int f,l;
+
         // Read and process input
-        try (BufferedReader reader = new BufferedReader(new FileReader(MoleculeFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(MoleculeFile))) { //Might want to move reader outside molecule class in the future to save space
             String line;
+            moleculeName = reader.readLine(); //Reads name
+            numAtoms = Integer.parseInt(reader.readLine()); //Reads # of atoms
+            atomArrayList = new ArrayList<Atom>(numAtoms); //Creates arraylist of atoms
+            for(int ii = 0; ii <numAtoms;ii++) {
+                line = reader.readLine();
+                int num = pt.get(line); //Looks up element in Periodic Table
+                atomArrayList.add(new Atom(line+numElements[num],num)); //Adds atom to list (with index)
+                numElements[num]++; //Increases count for specific atom
+            }
             while ((line = reader.readLine()) != null) {
+                numEdges++; //Counts # of edges
+                f = Integer.parseInt(line.substring(0,1)); //Reads first atom in edge
+                l = Integer.parseInt(line.substring(2)); //Reads second atom in edge
+                atomArrayList.get(f).addEdge(atomArrayList.get(l)); //Marks edge for first atom
+                atomArrayList.get(l).addEdge(atomArrayList.get(f)); //Marks edge for second atom
                 System.out.println(line); // TODO: we can change this to parse the file rather than print it
             }
         } catch (IOException e) {
@@ -32,15 +56,11 @@ public class Molecule {
 
 
     //FIELDS
-
     String moleculeName;
-
+    Map <String, Integer> pt = new HashMap<String,Integer>();
     int numAtoms;
-
     int numEdges;
-
-    // numDegrees for each atom;
-
+    ArrayList<Atom> atomArrayList;
     int[] numElements; //stores quantity of each element
 
 
