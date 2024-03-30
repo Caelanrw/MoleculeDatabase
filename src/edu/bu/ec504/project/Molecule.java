@@ -88,5 +88,12 @@ public class Molecule {
         return this;
     }
 
+    /**
+     * Return number of atoms of the molecule
+     */
+    public int getNumAtoms() {
+        return numAtoms;
+    }
+
 }
 
