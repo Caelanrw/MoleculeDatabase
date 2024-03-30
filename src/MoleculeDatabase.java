@@ -7,12 +7,12 @@ package edu.bu.ec504.project;
  */
 public class MoleculeDatabase implements Serializable {
 
-    private ArrayList<MoleculeDatabase> db;   // Molecule database
+    public ArrayList<MoleculeDatabase> db;   // Molecule database
 
     /**
-     * Private constructor to prevent instantiation from outside
+     * Constructs a database
      */
-    private MoleculeDatabase() {
+    public MoleculeDatabase() {
         this.db = new ArrayList<>();
     }
 
