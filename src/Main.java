@@ -71,7 +71,7 @@ public class Main {
 
         // Check if an alternative filename is provided as a command line argument
         if (args.length > 1) {
-        filename = args[1];
+            filename = args[1];
         }
 
         try (Socket clientSocket = new Socket("localhost", PORT_NUMBER)) {
