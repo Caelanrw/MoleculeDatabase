@@ -7,7 +7,7 @@ package edu.bu.ec504.project;
  */
 public class MoleculeDatabase implements Serializable {
 
-    public ArrayList<MoleculeDatabase> db;   // Molecule database
+    public ArrayList<ArrayList<Molecule>> db;   // Molecule database
 
     /**
      * Constructs a database
@@ -27,13 +27,18 @@ public class MoleculeDatabase implements Serializable {
      * Find isomorphic molecule from the database
      */
     public Molecule findMolecule(Molecule molecule) {
-        // Iterate through the array list of molecules inside the database
-        for (Molecule dbMolecule : db) {
+        // Retrieve the partitioned array list based on the number of atoms
+        int numAtoms = molecule.getNumAtoms();
+        ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
+
+        // Iterate through the array list of molecules with the same number of atoms
+        for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 return result; // Return the isomorphic molecule
             }
         }
+
         System.out.println("No isomorphic molecule found in database.");
         return null; // Return null if molecule not found
     }
