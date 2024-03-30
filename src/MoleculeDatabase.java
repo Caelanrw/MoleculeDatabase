@@ -26,7 +26,7 @@ public class MoleculeDatabase implements Serializable {
     /**
      * Find isomorphic molecule from the database
      */
-    public Molecule find(Molecule molecule) {
+    public Molecule findMolecule(Molecule molecule) {
         // Iterate through the array list of molecules inside the database
         for (Molecule dbMolecule : db) {
             if (areMoleculesEqual(dbMolecule, molecule)) {
