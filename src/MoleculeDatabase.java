@@ -29,8 +29,9 @@ public class MoleculeDatabase implements Serializable {
     public Molecule findMolecule(Molecule molecule) {
         // Iterate through the array list of molecules inside the database
         for (Molecule dbMolecule : db) {
-            if (areMoleculesEqual(dbMolecule, molecule)) {
-                return dbMolecule; // Return the isomorphic molecule
+            Molecule result = dbMolecule.areMoleculesEqual(molecule);
+            if (result != null) {
+                return result; // Return the isomorphic molecule
             }
         }
         System.out.println("No isomorphic molecule found in database.");
