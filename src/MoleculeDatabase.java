@@ -1,5 +1,6 @@
 import edu.bu.ec504.project.Molecule;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,6 +86,10 @@ public class MoleculeDatabase {
      * Load database from file system
      */
     public void load(String filename) throws IOException {
+        File dbFile = new File(filename);
+        if (!dbFile.exists()) {
+            this.save(filename);
+        }
         FileInputStream fileInStream = new FileInputStream(filename);
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
