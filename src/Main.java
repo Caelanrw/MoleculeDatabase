@@ -1,3 +1,4 @@
+import edu.bu.ec504.project.Molecule;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,38 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
+
+  static MoleculeDatabase moleculeDb = null;
+
+  public static void commandHandler1(String cmd) {
+    switch (cmd) {
+      case "--printDb":
+        moleculeDb.printDb();
+        break;
+      default:
+        System.out.println("unrecognized command: " + cmd);
+        break;
+    }
+  }
+
+  public static void commandHandler2(String cmd, String moleculePath) {
+    switch (cmd) {
+      case "--addMolecule":
+        moleculeDb.addMolecule(new Molecule(moleculePath));
+        break;
+      case "--findMolecule":
+        Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
+        if (molecule == null) {
+          System.out.println("NOT FOUND");
+        } else {
+          System.out.println("FOUND");
+        }
+        break;
+      default:
+        System.out.println("unrecognized command: " + cmd);
+        break;
+    }
+  }
 
   /**
    * Method to run the client side of the program
@@ -37,28 +70,26 @@ public class Main {
   public static void runServer(ServerSocket serverSocket, String cmd, String moleculePath,
       String dbName) throws IOException {
     // Load the database
-    MoleculeDatabase moleculeDb = new MoleculeDatabase();
+    moleculeDb = new MoleculeDatabase();
     moleculeDb.load(dbName);
 
     // Continue processing commands until "--quit" command is received
     while (!cmd.equals("--quit")) {
       // Perform actions based on the received command
-      if (moleculePath.equals("")) {
-        System.out.println("moleculePath is empty. moleculePath cannot be empty");
-      } else if (cmd.equals("--addMolecule")) {
-        System.out.println("received: add " + moleculePath);
-
-        // Add molecule logic here
-      } else if (cmd.equals("--findMolecules")) {
-        System.out.println("received: find " + moleculePath);
-
-        // Find molecule logic here
+      if (moleculePath.isEmpty()) {
+        commandHandler1(cmd);
       } else {
-        System.out.println("unrecognized command: " + cmd);
+        commandHandler2(cmd, moleculePath);
       }
 
       // Accept incoming client connections
-      Socket clientSocket = serverSocket.accept();
+      Socket clientSocket;
+      try {
+        clientSocket = serverSocket.accept();
+      } catch (IOException e) {
+        System.out.println("connection timed out");
+        break;
+      }
       InputStream inStream = clientSocket.getInputStream();
       BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
       String[] args = reader.readLine().split(" ");
