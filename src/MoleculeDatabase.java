@@ -1,6 +1,5 @@
 import edu.bu.ec504.project.Molecule;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,9 +15,9 @@ public class MoleculeDatabase {
 
     public HashMap<Integer, ArrayList<Molecule>> db;   // Molecule database
 
-    static boolean verbose = false;
+    public boolean verbose = false;
 
-    public static void printVerbose(String s) {
+    public void printVerbose(String s) {
         if (verbose) {
             System.out.println(s);
         }
@@ -33,7 +32,7 @@ public class MoleculeDatabase {
 
     public void printDb() {
         for (Integer atomCount : this.db.keySet()) {
-            System.out.println(atomCount);
+            System.out.println("\n# atoms: " + atomCount.toString());
             ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
             for (Molecule molecule : moleculesWithSameNumAtoms) {
                 System.out.println(molecule.moleculeName);
@@ -46,7 +45,7 @@ public class MoleculeDatabase {
      */
     public void addMolecule(Molecule molecule) {
         if (molecule == null) {
-            printVerbose("molecule cannot be null");
+            printVerbose("molecule == null");
             return;
         }
         int numAtoms = molecule.getNumAtoms();
@@ -97,10 +96,6 @@ public class MoleculeDatabase {
      * Load database from file system
      */
     public void load(String filename) throws IOException {
-        File dbFile = new File(filename);
-        if (!dbFile.exists()) {
-            this.save(filename);
-        }
         FileInputStream fileInStream = new FileInputStream(filename);
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
