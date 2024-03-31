@@ -117,7 +117,7 @@ public class Main {
      * Main method to start the program
      */
     public static void main(String[] args) throws IOException {
-        System.out.println("\r");
+//        System.out.println("\r");
         final int ARG_COUNT = args.length;
 
         // Get the port number from the command line arguments
