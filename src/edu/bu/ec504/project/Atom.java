@@ -1,10 +1,11 @@
 package edu.bu.ec504.project;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Atom {
+public class Atom implements Serializable {
     public Atom(String name,int elem){
         atomName = name;
         degree = 0;
