@@ -16,6 +16,14 @@ public class MoleculeDatabase {
 
     public HashMap<Integer, ArrayList<Molecule>> db;   // Molecule database
 
+    static boolean verbose = false;
+
+    public static void printVerbose(String s) {
+        if (verbose) {
+            System.out.println(s);
+        }
+    }
+
     /**
      * Constructs a database
      */
@@ -38,6 +46,7 @@ public class MoleculeDatabase {
      */
     public void addMolecule(Molecule molecule) {
         if (molecule == null) {
+            printVerbose("molecule cannot be null");
             return;
         }
         int numAtoms = molecule.getNumAtoms();
@@ -57,14 +66,14 @@ public class MoleculeDatabase {
         // Retrieve the partitioned array list based on the number of atoms
         int numAtoms = molecule.getNumAtoms();
         if (!db.containsKey(numAtoms)) {
-//      System.out.println("no ArrayList with correct # of atoms");
+            printVerbose("no ArrayList with correct # of atoms");
             return null;
         }
         ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
 
         // Iterate through the array list of molecules with the same number of atoms
         for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
-            System.out.println(dbMolecule.moleculeName + " vs " + molecule.moleculeName);
+            printVerbose(dbMolecule.moleculeName + " vs " + molecule.moleculeName);
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 return result; // Return the isomorphic molecule
@@ -82,7 +91,6 @@ public class MoleculeDatabase {
         objOutStream.writeObject(this.db);
         objOutStream.close();
         fileOutStream.close();
-        System.out.println("Database saved successfully.");
     }
 
     /**
@@ -97,9 +105,9 @@ public class MoleculeDatabase {
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
             this.db = (HashMap<Integer, ArrayList<Molecule>>) objInStream.readObject();
-            System.out.println("Database loaded successfully.");
+            printVerbose("Database loaded successfully.");
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error loading database: " + e.getMessage());
+            printVerbose("Error loading database: " + e.getMessage());
         }
         objInStream.close();
         fileInStream.close();

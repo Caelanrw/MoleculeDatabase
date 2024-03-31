@@ -13,6 +13,13 @@ import java.net.Socket;
 public class Main {
 
     static MoleculeDatabase moleculeDb = null;
+    static boolean verbose = false;
+
+    public static void printVerbose(String s) {
+        if (verbose) {
+            System.out.println(s);
+        }
+    }
 
     public static void commandHandler1(String cmd) {
         switch (cmd) {
@@ -20,7 +27,7 @@ public class Main {
                 moleculeDb.printDb();
                 break;
             default:
-                System.out.println("unrecognized command: " + cmd);
+                printVerbose("unrecognized command: " + cmd);
                 break;
         }
     }
@@ -35,11 +42,11 @@ public class Main {
                 if (molecule == null) {
                     System.out.println("NOT FOUND");
                 } else {
-                    System.out.println("FOUND");
+                    printVerbose("FOUND");
                 }
                 break;
             default:
-                System.out.println("unrecognized command: " + cmd);
+                printVerbose("unrecognized command: " + cmd);
                 break;
         }
     }
@@ -110,6 +117,7 @@ public class Main {
 
         // save the database before exiting
         moleculeDb.save(dbName);
+        System.out.println("Database saved successfully.");
         System.out.println("Goodbye");
     }
 
@@ -117,7 +125,6 @@ public class Main {
      * Main method to start the program
      */
     public static void main(String[] args) throws IOException {
-//        System.out.println("\r");
         final int ARG_COUNT = args.length;
 
         // Get the port number from the command line arguments
