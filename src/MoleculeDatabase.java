@@ -37,6 +37,9 @@ public class MoleculeDatabase {
      * Add a new molecule into the database
      */
     public void addMolecule(Molecule molecule) {
+        if (molecule == null) {
+            return;
+        }
         int numAtoms = molecule.getNumAtoms();
         if (this.db.containsKey(numAtoms)) {
             this.db.get(numAtoms).add(molecule);
