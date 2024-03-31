@@ -137,13 +137,7 @@ public class Main {
             moleculePath = args[2];
         }
 
-        // Set the default filename for the database
-        String dbName = "molecule.db";
-
-        // Check if an alternative filename is provided as a command line argument
-        if (ARG_COUNT > 3) {
-            dbName = args[3];
-        }
+        // run as client or server
         try (Socket clientSocket = new Socket("localhost", PORT_NUMBER)) {
             // If a client connection is successful, run the client side of the program
             runClient(clientSocket, cmd + " " + moleculePath);
@@ -151,6 +145,16 @@ public class Main {
             // If a client connection fails, run the server side of the program
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
             serverSocket.setSoTimeout(60 * 1000);
+
+            // Set the default filename for the database
+            String dbName = "molecule.db";
+
+            // Check if an alternative filename is provided as a command line argument
+            if (ARG_COUNT > 3) {
+                dbName = args[3];
+            }
+
+            // start server
             runServer(serverSocket, cmd, moleculePath, dbName);
             serverSocket.close();
         }
