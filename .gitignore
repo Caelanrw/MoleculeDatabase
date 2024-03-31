@@ -30,6 +30,6 @@ bin/
 
 .idea/
 *.db
-
+*.bin
 
 
