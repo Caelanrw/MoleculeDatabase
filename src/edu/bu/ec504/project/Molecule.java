@@ -64,16 +64,16 @@ public class Molecule implements Serializable {
      */
     public Molecule areMoleculesEqual(Molecule otherMolecule) {
         // Compare the name of the molecule
-        if (!this.moleculeName.equals(otherMolecule.moleculeName)) {
-            System.out.println("different names");
-            return null; // Names are different, molecules are not equal
-        }
+//        if (!this.moleculeName.equals(otherMolecule.moleculeName)) {
+//            System.out.println("different names");
+//            return null; // Names are different, molecules are not equal
+//        }
 
         // Compare the number of atoms
-        if (this.numAtoms != otherMolecule.numAtoms) {
-            System.out.println("different numAtoms");
-            return null; // Number of atoms is different, molecules are not equal
-        }
+//        if (this.numAtoms != otherMolecule.numAtoms) {
+//            System.out.println("different numAtoms");
+//            return null; // Number of atoms is different, molecules are not equal
+//        }
 
         // Compare the number of edges
         if (this.numEdges != otherMolecule.numEdges) {
