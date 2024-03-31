@@ -1,11 +1,6 @@
 import edu.bu.ec504.project.Molecule;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,6 +9,15 @@ public class Main {
 
     static MoleculeDatabase moleculeDb = null;
     static boolean verbose = false;
+
+    public static void initDb(String dbName) throws IOException {
+        // Load the database
+        moleculeDb = new MoleculeDatabase();
+        File dbFile = new File(dbName);
+        if (dbFile.exists()) {
+            moleculeDb.load(dbName);
+        }
+    }
 
     public static void printVerbose(String s) {
         if (verbose) {
@@ -26,6 +30,14 @@ public class Main {
             case "--printDb":
                 moleculeDb.printDb();
                 break;
+            case "--verbose":
+                if (verbose) {
+                    System.out.println("verbose: true -> false");
+                } else {
+                    System.out.println("verbose: false -> true");
+                }
+                verbose = !verbose;
+                moleculeDb.verbose = verbose;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;
@@ -77,10 +89,6 @@ public class Main {
      */
     public static void runServer(ServerSocket serverSocket, String cmd, String moleculePath,
                                  String dbName) throws IOException {
-        // Load the database
-        moleculeDb = new MoleculeDatabase();
-        moleculeDb.load(dbName);
-
         // Continue processing commands until "--quit" command is received
         while (!cmd.equals("--quit")) {
             // Perform actions based on the received command
@@ -154,7 +162,8 @@ public class Main {
                 dbName = args[3];
             }
 
-            // start server
+            // initialize database and start server
+            initDb(dbName);
             runServer(serverSocket, cmd, moleculePath, dbName);
             serverSocket.close();
         }
