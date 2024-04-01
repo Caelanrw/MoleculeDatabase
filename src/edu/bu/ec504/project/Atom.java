@@ -31,7 +31,7 @@ public class Atom implements Serializable {
     public boolean marked;
 
 
-    class ElemOrderPair {
+    class ElemOrderPair implements Serializable{
         public int eType;
         public int bondOrder;
         public ElemOrderPair(int eType, int bondOrder) {
