@@ -38,6 +38,7 @@ public class Main {
                 }
                 verbose = !verbose;
                 moleculeDb.verbose = verbose;
+                break;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;
