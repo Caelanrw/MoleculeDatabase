@@ -81,7 +81,7 @@ public enum PeriodicTable {
     Ir(77),
     Pt(78),
     Au(79),
-    Hu(80),
+    Hg(80),
     Tl(81),
     Pb(82),
     Bi(83),
