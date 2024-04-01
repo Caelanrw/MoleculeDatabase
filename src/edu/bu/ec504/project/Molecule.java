@@ -66,13 +66,13 @@ public class Molecule implements Serializable {
 
         // Compare the number of elements
         if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
-            System.out.println("different numElements");
+//            System.out.println("different numElements");
             return null; // Number of elements is different, molecules are not equal
         }
 
         // Compare the number of edges
         if (this.numEdges != otherMolecule.numEdges) {
-            System.out.println("different numEdges");
+//            System.out.println("different numEdges");
             return null; // Number of edges is different, molecules are not equal
         }
 

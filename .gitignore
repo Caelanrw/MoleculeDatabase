@@ -31,5 +31,6 @@ bin/
 .idea/
 *.db
 *.bin
-
+*.txt
+*.pyc
 
