@@ -87,35 +87,39 @@ public class Molecule implements Serializable {
             return null; // Number of edges is different, molecules are not equal
         }
 
+        // Clean the atom list of any marked atoms
+        for(Atom cleanAtom : otherMolecule.atomArrayList)
+            cleanAtom.marked = false;
         // Compare the atom lists
-        //TODO: Clone atomArrayList (so that when marking degrees as invalid, it does not make permanent change to input molecule)
         for(Atom dbAtom : this.atomArrayList) {
             boolean atomFound = false;
             for (Atom newAtom : otherMolecule.atomArrayList) {
-                if (newAtom.degree == dbAtom.degree && newAtom.elementType == dbAtom.elementType) { //Check if degrees and elements are the same
+                if (!newAtom.marked &&  newAtom.degree == dbAtom.degree && newAtom.elementType == dbAtom.elementType) { //Check if degrees and elements are the same
                     boolean sameConnected = true;
                     // Compare connected of each atom
                     //for each connected atom in dbAtom
-                    //TODO: Clone connected (so that when comparing with other 'newAtom' this is not already invalid)
+                    boolean [] edgeMarked = new boolean[newAtom.connected.size()];
                     for (Atom.ElemOrderPair dbValues : dbAtom.connected.values()) {
                         boolean matchingEdgeIsFound = false;
+                        int marker = 0;
                         //for each connected element in  input
                         for (Atom.ElemOrderPair newAtomValues : newAtom.connected.values()) {
                             //if its a match
-                            if (dbValues.eType == newAtomValues.eType && dbValues.bondOrder == newAtomValues.bondOrder) {
+                            if (!edgeMarked[marker] && dbValues.eType == newAtomValues.eType && dbValues.bondOrder == newAtomValues.bondOrder) {
                                 //mark the newAtom edge as already found
-                                newAtomValues.eType = -1;
+                                edgeMarked[marker]=true;
                                 matchingEdgeIsFound = true;
                                 //go to next connected atom in dbAtom (break)
                                 break;
                             }
+                            marker++;
                         }
                         if (!matchingEdgeIsFound)
                             sameConnected = false;
                     }
                     if (sameConnected) {
                         atomFound = true;
-                        newAtom.degree = -1;
+                        newAtom.marked = true;
                         break;
                     }
                     //if connected isnt the same

@@ -11,6 +11,7 @@ public class Atom implements Serializable {
         degree = 0;
         connected = new HashMap<>();
         elementType = elem;
+        marked = false;
     }
     public void addEdge(Atom i) {
         degree++;
@@ -27,6 +28,8 @@ public class Atom implements Serializable {
     public int elementType;
     public int degree;
     public Map<String,ElemOrderPair> connected;
+    public boolean marked;
+
 
     class ElemOrderPair {
         public int eType;

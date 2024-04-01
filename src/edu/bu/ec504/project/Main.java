@@ -15,14 +15,18 @@ public class Main {
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
-                        moleculeArrayList.add(new Molecule(file.getPath()));
+                        for(int oo = 0;oo <1000;oo++)
+                            moleculeArrayList.add(new Molecule(file.getPath()));
                     }
                 }
             }
         }
         Molecule tester = new Molecule(filename);
-        if(moleculeArrayList.get(0).areMoleculesEqual(tester) == null) {
-            System.out.println("err");
+        for(Molecule f: moleculeArrayList) {
+            Molecule testing = new Molecule(filename);
+            if (moleculeArrayList.get(0).areMoleculesEqual(testing) == null) {
+                System.out.println("err");
+            }
         }
     }
 
