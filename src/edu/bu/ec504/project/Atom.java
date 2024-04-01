@@ -15,17 +15,26 @@ public class Atom implements Serializable {
     public void addEdge(Atom i) {
         degree++;
         if(connected.containsKey(i.getName())) {
-            connected.put(i.getName(),connected.get(i.getName())+1);
+            connected.put(i.getName(),new ElemOrderPair(i.elementType,connected.get(i.getName()).bondOrder+1));
         }
         else
-            connected.put(i.getName(),1);
+            connected.put(i.getName(),new ElemOrderPair(i.elementType,1));
     }
     public String getName() {
         return this.atomName;
     }
     private String atomName;
-    private int elementType;
-    private int degree;
-    private Map<String,Integer> connected;
+    public int elementType;
+    public int degree;
+    public Map<String,ElemOrderPair> connected;
+
+    class ElemOrderPair {
+        public int eType;
+        public int bondOrder;
+        public ElemOrderPair(int eType, int bondOrder) {
+            this.eType = eType;
+            this.bondOrder = bondOrder;
+        }
+    }
 }
 

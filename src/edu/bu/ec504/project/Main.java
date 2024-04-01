@@ -21,6 +21,9 @@ public class Main {
             }
         }
         Molecule tester = new Molecule(filename);
+        if(moleculeArrayList.get(0).areMoleculesEqual(tester) == null) {
+            System.out.println("err");
+        }
     }
 
 }

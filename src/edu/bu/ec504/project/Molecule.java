@@ -75,6 +75,12 @@ public class Molecule implements Serializable {
 //            return null; // Number of atoms is different, molecules are not equal
 //        }
 
+        // Compare the number of elements
+        if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
+            System.out.println("different numElements");
+            return null; // Number of elements is different, molecules are not equal
+        }
+
         // Compare the number of edges
         if (this.numEdges != otherMolecule.numEdges) {
             System.out.println("different numEdges");
@@ -82,16 +88,65 @@ public class Molecule implements Serializable {
         }
 
         // Compare the atom lists
-//        if (!this.atomArrayList.equals(otherMolecule.atomArrayList)) {
-//            System.out.println("different atomArrayList");
-//            return null; // Atom lists are different, molecules are not equal
-//        }
-
-        // Compare the number of elements
-        if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
-            System.out.println("different numElements");
-            return null; // Number of elements is different, molecules are not equal
+        for(Atom dbAtom : this.atomArrayList) {
+            boolean atomFound = false;
+            for (Atom newAtom : otherMolecule.atomArrayList) {
+                if (newAtom.degree == dbAtom.degree && newAtom.elementType == dbAtom.elementType) { //Check if degrees and elements are the same
+                    boolean sameConnected = true;
+                    // Compare connected of each atom
+                    //for each connected atom in dbAtom
+                    for (Atom.ElemOrderPair dbValues : dbAtom.connected.values()) {
+                        boolean matchingEdgeIsFound = false;
+                        //for each connected element in  input
+                        for (Atom.ElemOrderPair newAtomValues : newAtom.connected.values()) {
+                            //if its a match
+                            if (dbValues.eType == newAtomValues.eType && dbValues.bondOrder == newAtomValues.bondOrder) {
+                                //mark the newAtom edge as already found
+                                newAtomValues.eType = -1;
+                                matchingEdgeIsFound = true;
+                                //go to next connected atom in dbAtom (break)
+                                break;
+                            }
+                        }
+                        if (!matchingEdgeIsFound)
+                            sameConnected = false;
+                    }
+                    if (sameConnected) {
+                        atomFound = true;
+                        newAtom.degree = -1;
+                        break;
+                    }
+                    //if connected isnt the same
+                    //go to next newAtom;
+                }
+            }
+            if(!atomFound)
+                return null;
         }
+
+
+                        //boolean matchingEdgeIsFound = false;
+                        //for each connected element in cyphered input
+                            //if its a match
+                                //mark the newAtom edge as already found
+                                //matchingEdgeIsFound = true;
+                                //go to next connected atom in dbAtom (break)
+                            //if its not a match
+                                //go to next connected element in cyphered input (do nothing)
+                        //if !matchingEdgeIsFound, this is the wrong "newAtom"
+                            //sameConnected = false;
+                    //if connected is the same
+                        //atomFound = true;
+                        //change newAtom degree to invalid number (0)
+                        //go to next dbAtom;
+                    //if connected isnt the same
+                        //go to next newAtom;
+            //if !atomFound
+                //return null;
+
+
+
+
 
         // If all comparisons passed, the molecules are equal
         return this;
@@ -103,6 +158,7 @@ public class Molecule implements Serializable {
     public int getNumAtoms() {
         return numAtoms;
     }
+
 
 }
 
