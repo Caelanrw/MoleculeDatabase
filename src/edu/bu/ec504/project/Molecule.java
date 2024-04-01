@@ -130,30 +130,6 @@ public class Molecule implements Serializable {
                 return null;
         }
 
-
-                        //boolean matchingEdgeIsFound = false;
-                        //for each connected element in cyphered input
-                            //if its a match
-                                //mark the newAtom edge as already found
-                                //matchingEdgeIsFound = true;
-                                //go to next connected atom in dbAtom (break)
-                            //if its not a match
-                                //go to next connected element in cyphered input (do nothing)
-                        //if !matchingEdgeIsFound, this is the wrong "newAtom"
-                            //sameConnected = false;
-                    //if connected is the same
-                        //atomFound = true;
-                        //change newAtom degree to invalid number (0)
-                        //go to next dbAtom;
-                    //if connected isnt the same
-                        //go to next newAtom;
-            //if !atomFound
-                //return null;
-
-
-
-
-
         // If all comparisons passed, the molecules are equal
         return this;
     }
