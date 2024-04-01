@@ -75,22 +75,59 @@ public class Molecule implements Serializable {
 //            return null; // Number of atoms is different, molecules are not equal
 //        }
 
+        // Compare the number of elements
+        if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
+            System.out.println("different numElements");
+            return null; // Number of elements is different, molecules are not equal
+        }
+
         // Compare the number of edges
         if (this.numEdges != otherMolecule.numEdges) {
             System.out.println("different numEdges");
             return null; // Number of edges is different, molecules are not equal
         }
 
+        // Clean the atom list of any marked atoms
+        for(Atom cleanAtom : otherMolecule.atomArrayList)
+            cleanAtom.marked = false;
         // Compare the atom lists
-//        if (!this.atomArrayList.equals(otherMolecule.atomArrayList)) {
-//            System.out.println("different atomArrayList");
-//            return null; // Atom lists are different, molecules are not equal
-//        }
-
-        // Compare the number of elements
-        if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
-            System.out.println("different numElements");
-            return null; // Number of elements is different, molecules are not equal
+        for(Atom dbAtom : this.atomArrayList) {
+            boolean atomFound = false;
+            for (Atom newAtom : otherMolecule.atomArrayList) {
+                if (!newAtom.marked &&  newAtom.degree == dbAtom.degree && newAtom.elementType == dbAtom.elementType) { //Check if degrees and elements are the same
+                    boolean sameConnected = true;
+                    // Compare connected of each atom
+                    //for each connected atom in dbAtom
+                    boolean [] edgeMarked = new boolean[newAtom.connected.size()];
+                    for (Atom.ElemOrderPair dbValues : dbAtom.connected.values()) {
+                        boolean matchingEdgeIsFound = false;
+                        int marker = 0;
+                        //for each connected element in  input
+                        for (Atom.ElemOrderPair newAtomValues : newAtom.connected.values()) {
+                            //if its a match
+                            if (!edgeMarked[marker] && dbValues.eType == newAtomValues.eType && dbValues.bondOrder == newAtomValues.bondOrder) {
+                                //mark the newAtom edge as already found
+                                edgeMarked[marker]=true;
+                                matchingEdgeIsFound = true;
+                                //go to next connected atom in dbAtom (break)
+                                break;
+                            }
+                            marker++;
+                        }
+                        if (!matchingEdgeIsFound)
+                            sameConnected = false;
+                    }
+                    if (sameConnected) {
+                        atomFound = true;
+                        newAtom.marked = true;
+                        break;
+                    }
+                    //if connected isnt the same
+                    //go to next newAtom;
+                }
+            }
+            if(!atomFound)
+                return null;
         }
 
         // If all comparisons passed, the molecules are equal
@@ -103,6 +140,7 @@ public class Molecule implements Serializable {
     public int getNumAtoms() {
         return numAtoms;
     }
+
 
 }
 
