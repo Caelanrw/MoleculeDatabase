@@ -75,10 +75,10 @@ def writeIsomorphic(mol_name, smiles):
 
 if __name__ == "__main__":
     # replace with name of molecule
-    mol_name = "adenine"
+    mol_name = ""
     
     # replace with smiles string of molecule
-    smiles = 'c1[nH]c(c-2ncnc2n1)N'
+    smiles = ''
     
     writeMolecule(mol_name, smiles)
     writeIsomorphic(mol_name, smiles)
