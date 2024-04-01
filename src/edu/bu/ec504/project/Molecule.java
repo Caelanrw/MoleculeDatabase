@@ -88,6 +88,7 @@ public class Molecule implements Serializable {
         }
 
         // Compare the atom lists
+        //TODO: Clone atomArrayList (so that when marking degrees as invalid, it does not make permanent change to input molecule)
         for(Atom dbAtom : this.atomArrayList) {
             boolean atomFound = false;
             for (Atom newAtom : otherMolecule.atomArrayList) {
@@ -95,6 +96,7 @@ public class Molecule implements Serializable {
                     boolean sameConnected = true;
                     // Compare connected of each atom
                     //for each connected atom in dbAtom
+                    //TODO: Clone connected (so that when comparing with other 'newAtom' this is not already invalid)
                     for (Atom.ElemOrderPair dbValues : dbAtom.connected.values()) {
                         boolean matchingEdgeIsFound = false;
                         //for each connected element in  input
