@@ -3,6 +3,7 @@ import networkx as nx
 import random
 import requests
 import os
+import time
 
 # returns the order number of the edge that appears using nx.edge_list
 def getOrder(line):
@@ -96,9 +97,19 @@ def writeIsomorphic(mol_name, smiles):
     return 0
 
 if __name__ == "__main__":
+    START_CIN = 24524
+    STOP_CIN = 30000
+    INCREMENT = 100
+    # HH = 783
+    # H2 = 24523
+
     # range(start, end, step) --> Change values for number of molecules required
-    for indx in range(1,30,10):
-        numbers = [str(i) for i in range(indx, indx + 10)]
+    for indx in range(START_CIN,STOP_CIN,INCREMENT):
+        start_time = time.time()
+
+        numbers = [str(i) for i in range(indx, indx + INCREMENT)]
+        # if HH in numbers:
+        #     numbers.remove(HH)
         indexes = ",".join(numbers)
         
         # query from pubchem URL
@@ -112,9 +123,12 @@ if __name__ == "__main__":
             
             for chemical in page_text['PropertyTable']['Properties']:
                 # check if desired keys are in the json
-                if 'Title' in chemical and 'CanonicalSMILES' in chemical:
-                    mol_name = chemical['Title']
+                if 'CanonicalSMILES' in chemical: # and 'Title' in chemical:
+                    # mol_name = chemical['Title']
+                    mol_name = "molecule" + str(chemical['CID'])
                     smiles = chemical['CanonicalSMILES']
+                    if smiles == "[HH]":
+                        continue
                     
                     print("molecule "+ str(chemical['CID']) + ": " +  mol_name + "\t" + "smiles: " + smiles)
                 
@@ -122,5 +136,6 @@ if __name__ == "__main__":
                         writeIsomorphic(mol_name, smiles)
         else:
             print("Failed to retrieve the page. Status code:", response.status_code)
-            
-        
+
+        while (time.time() - start_time < 0.3):
+            pass
