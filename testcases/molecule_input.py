@@ -1,18 +1,27 @@
 from pysmiles import read_smiles
 import networkx as nx
 import random
+import requests
+import os
 
 # returns the order number of the edge that appears using nx.edge_list
 def getOrder(line):
-     return int(line.split("{'order': ")[1].rstrip('}\n'))
+    # only allow integer bond order values
+    order = line.split("{'order': ")[1].rstrip('}\n')
+    return int(line.split("{'order': ")[1].rstrip('}\n')) if order.isdigit() else -1
 
 # multiplies the edge pair by the order number
 def processContent(content):
     new_content = ""
     for line in content:
-        # Check if the line contains bond order information
+        # check if the line contains bond order information
         if "{'order':" in line:
             bond_order = getOrder(line)
+            # if bond order is invalid, then return error
+            if bond_order == -1:
+                return -1
+            
+            # duplicate the edge for value of bond order
             vertex_pair = ' '.join(line.split()[:2])
             for i in range(bond_order):
              new_content += vertex_pair + '\n'
@@ -28,7 +37,7 @@ def scrambleLabels(graph):
     random.shuffle(shuffled_nodes)
     new_map = dict(zip(nodes, shuffled_nodes))
     
-    # Use the mapping to generate a new graph with shuffled labels
+    # use the mapping to generate a new graph with shuffled labels
     scrambled_graph = nx.relabel_nodes(graph, new_map)
     return scrambled_graph
 
@@ -45,14 +54,21 @@ def writeMolecule(mol_name, smiles):
       mol_data += node[1] + '\n'
       
       
-    # Read the existing contents of the file
+    # read the generated edgelist
     with open(file_path_mol, 'r') as file:
         edgelist = file.read()
-        
+    
+    # if theres an invalid edgelist, remove it from the file system
     modified_edgelist = processContent(edgelist.split('\n'))
-    # Write the new content at the beginning and the original content
+    if modified_edgelist == -1:
+        os.remove(file_path_mol)
+        return -1
+        
+    # write metadata at the beginning and the original content
     with open(file_path_mol, 'w') as file:
         file.write(mol_data + modified_edgelist)
+    
+    return 0
 
 def writeIsomorphic(mol_name, smiles):
     iso_graph = scrambleLabels(read_smiles(smiles, explicit_hydrogen=True))
@@ -70,16 +86,41 @@ def writeIsomorphic(mol_name, smiles):
         isolist = file.read()
         
     modified_isolist = processContent(isolist.split('\n'))
+    if modified_isolist == -1:
+        os.remove(file_path_iso)
+        return -1
+    
     with open(file_path_iso, 'w') as file:
         file.write(iso_data + modified_isolist)
+        
+    return 0
 
 if __name__ == "__main__":
-    # replace with name of molecule
-    mol_name = "adenine"
-    
-    # replace with smiles string of molecule
-    smiles = 'c1[nH]c(c-2ncnc2n1)N'
-    
-    writeMolecule(mol_name, smiles)
-    writeIsomorphic(mol_name, smiles)
-    
+    # range(start, end, step) --> Change values for number of molecules required
+    for indx in range(1,30,10):
+        numbers = [str(i) for i in range(indx, indx + 10)]
+        indexes = ",".join(numbers)
+        
+        # query from pubchem URL
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/' + indexes + '/property/Title,CanonicalSMILES/json'
+        response = requests.get(url)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Extract the json from the response
+            page_text = response.json()
+            
+            for chemical in page_text['PropertyTable']['Properties']:
+                # check if desired keys are in the json
+                if 'Title' in chemical and 'CanonicalSMILES' in chemical:
+                    mol_name = chemical['Title']
+                    smiles = chemical['CanonicalSMILES']
+                    
+                    print("molecule "+ str(chemical['CID']) + ": " +  mol_name + "\t" + "smiles: " + smiles)
+                
+                    if writeMolecule(mol_name, smiles) == 0:
+                        writeIsomorphic(mol_name, smiles)
+        else:
+            print("Failed to retrieve the page. Status code:", response.status_code)
+            
+        
