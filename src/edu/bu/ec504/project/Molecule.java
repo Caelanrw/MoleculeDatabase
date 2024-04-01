@@ -63,17 +63,6 @@ public class Molecule implements Serializable {
      * @return The first molecule if they are equal, otherwise null.
      */
     public Molecule areMoleculesEqual(Molecule otherMolecule) {
-        // Compare the name of the molecule
-//        if (!this.moleculeName.equals(otherMolecule.moleculeName)) {
-//            System.out.println("different names");
-//            return null; // Names are different, molecules are not equal
-//        }
-
-        // Compare the number of atoms
-//        if (this.numAtoms != otherMolecule.numAtoms) {
-//            System.out.println("different numAtoms");
-//            return null; // Number of atoms is different, molecules are not equal
-//        }
 
         // Compare the number of elements
         if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
