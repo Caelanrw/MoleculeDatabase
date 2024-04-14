@@ -1,5 +1,6 @@
 import edu.bu.ec504.project.Molecule;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,28 +15,30 @@ import java.util.HashMap;
 public class MoleculeDatabase {
 
     public HashMap<Integer, ArrayList<Molecule>> db;   // Molecule database
-
-    public boolean verbose = false;
-
-    public void printVerbose(String s) {
-        if (verbose) {
-            System.out.println(s);
-        }
-    }
+    public JTextArea outputTextArea; // Reference to the text area in the GUI
 
     /**
      * Constructs a database
      */
-    public MoleculeDatabase() {
+    public MoleculeDatabase(JTextArea outputTextArea) {
         this.db = new HashMap<>();
+        this.outputTextArea = outputTextArea;
     }
 
+    /**
+     * Print contents of the database to GUI
+     */
     public void printDb() {
+        int size = 0;
+        for (ArrayList<Molecule> molecules : db.values()) {
+            size += molecules.size();
+        }
+        outputTextArea.append("Database Size: " + size + "\n");
         for (Integer atomCount : this.db.keySet()) {
-            System.out.println("\n# atoms: " + atomCount.toString());
+            outputTextArea.append("\n# atoms: " + atomCount.toString() + "\n");
             ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
             for (Molecule molecule : moleculesWithSameNumAtoms) {
-                System.out.println(molecule.moleculeName);
+                outputTextArea.append(molecule.moleculeName + "\n");
             }
         }
     }
@@ -45,7 +48,7 @@ public class MoleculeDatabase {
      */
     public void addMolecule(Molecule molecule) {
         if (molecule == null) {
-            printVerbose("molecule == null");
+            outputTextArea.append("molecule == null\n");
             return;
         }
         int numAtoms = molecule.getNumAtoms();
@@ -65,14 +68,14 @@ public class MoleculeDatabase {
         // Retrieve the partitioned array list based on the number of atoms
         int numAtoms = molecule.getNumAtoms();
         if (!db.containsKey(numAtoms)) {
-            printVerbose("no ArrayList with correct # of atoms");
+            outputTextArea.append("no ArrayList with correct # of atoms" + "\n");
             return null;
         }
         ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
 
         // Iterate through the array list of molecules with the same number of atoms
         for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
-            printVerbose(dbMolecule.moleculeName + " vs " + molecule.moleculeName);
+            outputTextArea.append(dbMolecule.moleculeName + " vs " + molecule.moleculeName + "\n");
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 return result; // Return the isomorphic molecule
@@ -100,11 +103,12 @@ public class MoleculeDatabase {
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
             this.db = (HashMap<Integer, ArrayList<Molecule>>) objInStream.readObject();
-            printVerbose("Database loaded successfully.");
+            outputTextArea.append("Database loaded successfully." + "\n");
         } catch (IOException | ClassNotFoundException e) {
-            printVerbose("Error loading database: " + e.getMessage());
+            outputTextArea.append("Error loading database: " + e.getMessage() + "\n");
         }
         objInStream.close();
         fileInStream.close();
     }
+
 }
