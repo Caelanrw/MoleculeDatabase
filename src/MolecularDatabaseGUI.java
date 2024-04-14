@@ -25,7 +25,7 @@ public class MolecularDatabaseGUI extends JFrame {
      */
     public MolecularDatabaseGUI() {
         // Set up the JFrame
-        setTitle("Molecular Database");
+        setTitle("Molecule Database");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
