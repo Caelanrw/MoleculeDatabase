@@ -129,9 +129,9 @@ public class MDB {
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
             this.db = (HashMap<Integer, ArrayList<Molecule>>) objInStream.readObject();
-            outputTextArea.append("Database loaded successfully." + "\n");
+            outputTextArea.append("Database loaded successfully." + "\n\n");
         } catch (IOException | ClassNotFoundException e) {
-            outputTextArea.append("Error loading database: " + e.getMessage() + "\n");
+            outputTextArea.append("Error loading database: " + e.getMessage() + "\n\n");
         }
         objInStream.close();
         fileInStream.close();
