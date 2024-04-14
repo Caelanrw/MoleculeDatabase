@@ -1,10 +1,12 @@
 import edu.bu.ec504.project.Molecule;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.awt.image.BufferedImage;
 
 public class GUI extends JFrame {
     private JTextArea outputTextArea;
@@ -110,26 +112,41 @@ public class GUI extends JFrame {
         });
 
         // Action listener for Display Molecule button
-//        displayMoleculeButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Get the molecule path from the text field
-//                String moleculePath = filePathField.getText();
-//
-//                // Create a new JFrame for displaying the molecule
-//                JFrame moleculeViewerFrame = new JFrame("Molecule Viewer");
-//                moleculeViewerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only the molecule viewer frame
-//
-//                // Instantiate MoleculeViewer and add it to the frame
-//                MoleculeViewer moleculeViewer = new MoleculeViewer(moleculePath);
-//                moleculeViewerFrame.getContentPane().add(moleculeViewer);
-//
-//                // Pack and display the frame
-//                moleculeViewerFrame.pack();
-//                moleculeViewerFrame.setLocationRelativeTo(null); // Center the frame on the screen
-//                moleculeViewerFrame.setVisible(true);
-//            }
-//        });
+        displayMoleculeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Get the API for the molecule
+                String moleculePath = filePathField.getText();
+                // Split the file path by "/"
+                String[] parts = moleculePath.split("/");
+                // Extract the filename (last part of the path)
+                String filename = parts[parts.length - 1];
+                // Remove the file extension (.txt) to get the molecule name
+                String moleculeName = filename.replace(".txt", "");
+                String imageURL = "https://cactus.nci.nih.gov/chemical/structure/" + moleculeName + "/image";
+
+                try {
+                    // Download the image from the URL
+                    URL url = new URL(imageURL);
+                    BufferedImage image = ImageIO.read(url);
+
+                    // Create a JLabel to display the image
+                    JLabel imageLabel = new JLabel(new ImageIcon(image));
+
+                    // Create a new JFrame to display the image
+                    JFrame imageFrame = new JFrame("Molecule Display");
+                    imageFrame.getContentPane().add(imageLabel, BorderLayout.CENTER);
+                    imageFrame.setSize(400, 400);
+                    imageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    imageFrame.setLocationRelativeTo(null); // Center the frame
+                    imageFrame.setVisible(true); // Make the frame visible
+                } catch (IOException ex) {
+                    // Handle the IOException
+                    ex.printStackTrace(); // You can print the stack trace or handle it differently
+                }
+            }
+        });
 
         // Action listener for Statistics button
         statisticsButton.addActionListener(new ActionListener() {
@@ -176,7 +193,7 @@ public class GUI extends JFrame {
 
                 // Close the server socket after accepting the connection
                 serverSocket.close();
-                moleculeDb.save(dbName);
+                moleculeDb.save(dbName); // save the database
 
             } catch (IOException ex) {
                 ex.printStackTrace();
