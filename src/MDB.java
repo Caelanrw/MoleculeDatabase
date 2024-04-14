@@ -1,3 +1,4 @@
+import edu.bu.ec504.project.Atom;
 import edu.bu.ec504.project.Molecule;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class represents the molecule database
@@ -26,21 +28,45 @@ public class MDB {
     }
 
     /**
-     * Print contents of the database to GUI
+     * Print database statistics to GUI
      */
     public void printDb() {
+        // Print number of molecules
         int size = 0;
         for (ArrayList<Molecule> molecules : db.values()) {
             size += molecules.size();
         }
-        outputTextArea.append("Database Size: " + size + "\n");
+        outputTextArea.append("# of molecules: " + size + "\n\n");
+
+        // Print the list of molecules
+        outputTextArea.append("List of molecules: " + "\n\n");
         for (Integer atomCount : this.db.keySet()) {
-            outputTextArea.append("\n# atoms: " + atomCount.toString() + "\n");
             ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
             for (Molecule molecule : moleculesWithSameNumAtoms) {
-                outputTextArea.append(molecule.moleculeName + "\n");
+                outputTextArea.append("Molecule name: " + molecule.moleculeName + "\n");
+                outputTextArea.append("# of atoms: " + atomCount.toString() + "\n\n");
             }
         }
+
+        // Print the largest and biggest molecules
+        int maxAtoms = Integer.MIN_VALUE;
+        int minAtoms = Integer.MAX_VALUE;
+        Molecule largestMolecule = null;
+        Molecule smallestMolecule = null;
+        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
+            int numAtoms = entry.getKey();
+            if (numAtoms > maxAtoms) {
+                maxAtoms = numAtoms;
+                largestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+            if (numAtoms < minAtoms) {
+                minAtoms = numAtoms;
+                smallestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+        }
+        outputTextArea.append("Smallest molecule: " + smallestMolecule.moleculeName + "\n");
+        outputTextArea.append("Largest molecule: " + largestMolecule.moleculeName + "\n\n");
+
     }
 
     /**
@@ -68,7 +94,7 @@ public class MDB {
         // Retrieve the partitioned array list based on the number of atoms
         int numAtoms = molecule.getNumAtoms();
         if (!db.containsKey(numAtoms)) {
-            outputTextArea.append("no ArrayList with correct # of atoms" + "\n");
+            outputTextArea.append("No ArrayList with correct # of atoms" + "\n");
             return null;
         }
         ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
