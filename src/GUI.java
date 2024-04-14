@@ -141,8 +141,7 @@ public class GUI extends JFrame {
                     imageFrame.setLocationRelativeTo(null); // Center the frame
                     imageFrame.setVisible(true); // Make the frame visible
                 } catch (IOException ex) {
-                    // Handle the IOException
-                    ex.printStackTrace(); // You can print the stack trace or handle it differently
+                    ex.printStackTrace();
                 }
             }
         });
