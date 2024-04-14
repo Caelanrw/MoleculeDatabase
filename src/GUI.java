@@ -16,7 +16,6 @@ public class GUI extends JFrame {
     private JButton statisticsButton;
     private JButton displayMoleculeButton;
     private JTextField filePathField;
-
     private static MDB moleculeDb;
     private Socket clientSocket;
     private PrintWriter writer;
