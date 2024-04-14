@@ -12,10 +12,10 @@ public class GUI extends JFrame {
     private JButton addMoleculeButton;
     private JButton findMoleculeButton;
     private JButton statisticsButton;
-    private JButton viewMoleculeButton;
+    private JButton displayMoleculeButton;
     private JTextField filePathField;
 
-    private static MoleculeDatabase moleculeDb;
+    private static MDB moleculeDb;
     private Socket clientSocket;
     private PrintWriter writer;
     private BufferedReader reader;
@@ -28,30 +28,39 @@ public class GUI extends JFrame {
         setTitle("Molecule Database");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.BLACK);
 
         // Create components
         outputTextArea = new JTextArea(20, 50); // the text area for all outputs
+        outputTextArea.setBackground(Color.BLACK); // Set the background color of the text area
+        outputTextArea.setForeground(Color.WHITE); // Set the text color
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
         chooseFileButton = new JButton("Choose File");
         addMoleculeButton = new JButton("Add Molecule");
         findMoleculeButton = new JButton("Find Molecule");
         statisticsButton = new JButton("Database Statistics");
-        viewMoleculeButton = new JButton("Display Molecule");
+        displayMoleculeButton = new JButton("Display Molecule");
         filePathField = new JTextField(20); // to show the file path
+        JLabel filePathLabel = new JLabel("File Path:");
+        filePathLabel.setForeground(Color.WHITE); // Set the text color
+        filePathField.setBackground(Color.WHITE); // Set the background color of the text field
+        filePathField.setForeground(Color.BLACK); // Set the text color
 
         // Add components to the JFrame
         JPanel controlPanel = new JPanel();
+        controlPanel.setBackground(Color.BLACK);
         controlPanel.add(chooseFileButton);
         controlPanel.add(addMoleculeButton);
         controlPanel.add(findMoleculeButton);
+        controlPanel.add(displayMoleculeButton);
         controlPanel.add(statisticsButton);
-        controlPanel.add(new JLabel("File Path:"));
+        controlPanel.add(filePathLabel);
         controlPanel.add(filePathField);
         add(controlPanel, BorderLayout.NORTH); // to show the control panel (e.g., buttons)
         add(scrollPane, BorderLayout.CENTER); // to show the printed output text area
 
         // Initialize molecule database
-        MoleculeDatabase moleculeDb = new MoleculeDatabase(outputTextArea);
+        MDB moleculeDb = new MDB(outputTextArea);
 
         // Action listener for Choose File button
         chooseFileButton.addActionListener(new ActionListener() {
@@ -78,7 +87,7 @@ public class GUI extends JFrame {
                 // Execute the addMolecule command
                 moleculeDb.addMolecule(new Molecule(moleculePath));
                 // Display output
-                outputTextArea.append("Molecule added: " + moleculePath + "\n");
+                outputTextArea.append("Molecule added: " + moleculePath + "\n\n");
             }
         });
 
@@ -92,28 +101,38 @@ public class GUI extends JFrame {
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
                 // Display the result in the output text area
                 if (molecule == null) {
-                    outputTextArea.append("NOT FOUND\n");
+                    outputTextArea.append("NOT FOUND\n\n");
                 } else {
-                    outputTextArea.append("FOUND\n");
-                    outputTextArea.append("Molecule found: " + moleculePath + "\n");
+                    outputTextArea.append("FOUND\n\n");
+                    outputTextArea.append("Molecule found: " + moleculePath + "\n\n");
                 }
             }
         });
 
-        // Action listener for View Molecule button
-        viewMoleculeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        // Action listener for Display Molecule button
+//        displayMoleculeButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
 //                // Get the molecule path from the text field
-//                String moleculePath = moleculePathField.getText();
-//                // Instantiate MoleculeViewer and display the molecule
+//                String moleculePath = filePathField.getText();
+//
+//                // Create a new JFrame for displaying the molecule
+//                JFrame moleculeViewerFrame = new JFrame("Molecule Viewer");
+//                moleculeViewerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only the molecule viewer frame
+//
+//                // Instantiate MoleculeViewer and add it to the frame
 //                MoleculeViewer moleculeViewer = new MoleculeViewer(moleculePath);
-//                moleculeViewer.setVisible(true);
-            }
-        });
+//                moleculeViewerFrame.getContentPane().add(moleculeViewer);
+//
+//                // Pack and display the frame
+//                moleculeViewerFrame.pack();
+//                moleculeViewerFrame.setLocationRelativeTo(null); // Center the frame on the screen
+//                moleculeViewerFrame.setVisible(true);
+//            }
+//        });
 
         // Action listener for Statistics button
-        chooseFileButton.addActionListener(new ActionListener() {
+        statisticsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 moleculeDb.printDb(); // print the content of database
@@ -172,7 +191,7 @@ public class GUI extends JFrame {
      */
     public void initDb(String dbName) throws IOException {
         // Load the database
-        moleculeDb = new MoleculeDatabase(outputTextArea);
+        moleculeDb = new MDB(outputTextArea);
         File dbFile = new File(dbName);
         if (dbFile.exists()) {
             moleculeDb.load(dbName);
