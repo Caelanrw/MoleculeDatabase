@@ -13,7 +13,7 @@ public class GUI extends JFrame {
     private JButton findMoleculeButton;
     private JButton statisticsButton;
     private JButton viewMoleculeButton;
-    private JTextField moleculePathField;
+    private JTextField filePathField;
 
     private static MoleculeDatabase moleculeDb;
     private Socket clientSocket;
@@ -37,7 +37,7 @@ public class GUI extends JFrame {
         findMoleculeButton = new JButton("Find Molecule");
         statisticsButton = new JButton("Database Statistics");
         viewMoleculeButton = new JButton("Display Molecule");
-        moleculePathField = new JTextField(20); // to show the file path
+        filePathField = new JTextField(20); // to show the file path
 
         // Add components to the JFrame
         JPanel controlPanel = new JPanel();
@@ -45,8 +45,8 @@ public class GUI extends JFrame {
         controlPanel.add(addMoleculeButton);
         controlPanel.add(findMoleculeButton);
         controlPanel.add(statisticsButton);
-        controlPanel.add(new JLabel("Molecule Path:"));
-        controlPanel.add(moleculePathField);
+        controlPanel.add(new JLabel("File Path:"));
+        controlPanel.add(filePathField);
         add(controlPanel, BorderLayout.NORTH); // to show the control panel (e.g., buttons)
         add(scrollPane, BorderLayout.CENTER); // to show the printed output text area
 
@@ -64,7 +64,7 @@ public class GUI extends JFrame {
                 // If a file is selected, set its path in the molecule path field
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    moleculePathField.setText(selectedFile.getAbsolutePath());
+                    filePathField.setText(selectedFile.getAbsolutePath());
                 }
             }
         });
@@ -74,7 +74,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the molecule path from the text field
-                String moleculePath = moleculePathField.getText();
+                String moleculePath = filePathField.getText();
                 // Execute the addMolecule command
                 moleculeDb.addMolecule(new Molecule(moleculePath));
                 // Display output
@@ -87,7 +87,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the molecule path from the text field
-                String moleculePath = moleculePathField.getText();
+                String moleculePath = filePathField.getText();
                 // Execute the findMolecule command
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
                 // Display the result in the output text area
@@ -104,11 +104,11 @@ public class GUI extends JFrame {
         viewMoleculeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Get the molecule path from the text field
-                String moleculePath = moleculePathField.getText();
-                // Instantiate MoleculeViewer and display the molecule
-                MoleculeViewer moleculeViewer = new MoleculeViewer(moleculePath);
-                moleculeViewer.setVisible(true);
+//                // Get the molecule path from the text field
+//                String moleculePath = moleculePathField.getText();
+//                // Instantiate MoleculeViewer and display the molecule
+//                MoleculeViewer moleculeViewer = new MoleculeViewer(moleculePath);
+//                moleculeViewer.setVisible(true);
             }
         });
 
