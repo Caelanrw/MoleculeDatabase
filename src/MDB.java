@@ -94,14 +94,14 @@ public class MDB {
         // Retrieve the partitioned array list based on the number of atoms
         int numAtoms = molecule.getNumAtoms();
         if (!db.containsKey(numAtoms)) {
-            outputTextArea.append("No ArrayList with correct # of atoms" + "\n");
+            outputTextArea.append("No ArrayList with correct # of atoms" + "\n\n");
             return null;
         }
         ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
 
         // Iterate through the array list of molecules with the same number of atoms
         for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
-            outputTextArea.append(dbMolecule.moleculeName + " vs " + molecule.moleculeName + "\n");
+            outputTextArea.append(dbMolecule.moleculeName + " vs " + molecule.moleculeName + "\n\n");
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 return result; // Return the isomorphic molecule
