@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 
-public class MolecularDatabaseGUI extends JFrame {
+public class GUI extends JFrame {
     private JTextArea outputTextArea;
     private JButton chooseFileButton;
     private JButton addMoleculeButton;
@@ -23,7 +23,7 @@ public class MolecularDatabaseGUI extends JFrame {
     /**
      * GUI constructor
      */
-    public MolecularDatabaseGUI() {
+    public GUI() {
         // Set up the JFrame
         setTitle("Molecule Database");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -60,7 +60,7 @@ public class MolecularDatabaseGUI extends JFrame {
                 // Create a file chooser
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Choose a file");
-                int result = fileChooser.showOpenDialog(MolecularDatabaseGUI.this);
+                int result = fileChooser.showOpenDialog(GUI.this);
                 // If a file is selected, set its path in the molecule path field
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
@@ -186,7 +186,7 @@ public class MolecularDatabaseGUI extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                MolecularDatabaseGUI gui = new MolecularDatabaseGUI();
+                GUI gui = new GUI();
             }
         });
     }
