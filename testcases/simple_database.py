@@ -3,13 +3,13 @@ import random
 import requests
 import time
 
-MIN_ISOMER_COUNT = 500
+MIN_ISOMER_COUNT = 100
 
 MAX_CID_SEGMENT_LEN = 4000  # maybe 3997
-MAX_MOLECULE_COUNT = 10_000_000
+MAX_MOLECULE_COUNT = 1
 
-C_count_max = 56
-C_count_min = 16
+C_count_max = 10000
+C_count_min = C_count_max // 2
 
 H_C_ratio_max = 48 / 25
 H_C_ratio_min = 17 / 15
@@ -18,7 +18,7 @@ N_C_ratio_max = 4 / 13
 N_C_ratio_min = 0
 
 O_C_ratio_max = 2 / 5
-O_C_ratio_min = 1 / 4
+O_C_ratio_min = 0
 
 
 def add_atom(atom: str, C_count: int, ratio_max: float, ratio_min: float):
@@ -32,7 +32,7 @@ def add_atom(atom: str, C_count: int, ratio_max: float, ratio_min: float):
     return ret
 
 
-def wait_for_api(previous_time):
+def wait_for_api_ready(previous_time):
     if previous_time != None:
         while time.time() - previous_time < 0.2:
             pass
@@ -61,9 +61,10 @@ if __name__ == "__main__":
             + chemical_formula
             + "/cids/JSON"
         )
-        previous_time = wait_for_api(previous_time)
+        previous_time = wait_for_api_ready(previous_time)
         response = requests.get(url)
         if response.status_code != 200:
+            print("Failed to retrieve the page. Status code:", response.status_code)
             continue
 
         data = response.json()
@@ -75,17 +76,13 @@ if __name__ == "__main__":
         cids = data["IdentifierList"]["CID"]
         isomer_count = len(cids)
         if isomer_count < MIN_ISOMER_COUNT:
-            print(chemical_formula + ": Has only " + str(isomer_count) + " isomers")
+            # print(chemical_formula + ": Has only " + str(isomer_count) + " isomers")
             previous_formulae.append(chemical_formula)
             continue
 
-        cid_segment = None
-        cid_idx = 0
-        while True:
-            cid_segment = str(cids[cid_idx])
-            cid_idx += 1
-            if cid_idx == isomer_count:
-                break
+        cid_segment = str(cids[0])
+        cid_idx = 1
+        while cid_idx < isomer_count:
             cid = cids[cid_idx]
             while len(cid_segment + "," + str(cid)) < MAX_CID_SEGMENT_LEN:
                 cid_segment += "," + str(cid)
@@ -96,16 +93,29 @@ if __name__ == "__main__":
                 + cid_segment
                 + "/property/Title,CanonicalSMILES/json"
             )
-            previous_time = wait_for_api(previous_time)
+            previous_time = wait_for_api_ready(previous_time)
             response = requests.get(url)
 
-            data = response.json()
-            for molecule_struct in data["PropertyTable"]["Properties"]:
-                if "CanonicalSMILES" in molecule_struct:
-                    molecule_name = chemical_formula + "_" + str(molecule_struct["CID"])
-                    smiles = molecule_struct["CanonicalSMILES"]
-                    if mi.writeMolecule(molecule_name, smiles, "simple_molecules") == 0:
-                        molecule_count += 1
-                        mi.writeIsomorphic(molecule_name, smiles, "simple_isomorphic")
+            if response.status_code == 200:
+                data = response.json()
+                for molecule_struct in data["PropertyTable"]["Properties"]:
+                    if "CanonicalSMILES" in molecule_struct:
+                        molecule_name = (
+                            chemical_formula + "_" + str(molecule_struct["CID"])
+                        )
+                        smiles = molecule_struct["CanonicalSMILES"]
+                        if (
+                            mi.writeMolecule(molecule_name, smiles, "simple_molecules")
+                            == 0
+                        ):
+                            molecule_count += 1
+                            mi.writeIsomorphic(
+                                molecule_name, smiles, "simple_isomorphic"
+                            )
+            else:
+                print("Failed to retrieve the page. Status code:", response.status_code)
+
+            cid_segment = str(cids[cid_idx])
+            cid_idx += 1
 
     print("goodbye")
