@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A class represents the molecule database
+ * A class represents the molecule database that works with the GUI
  */
 public class MDB {
 
