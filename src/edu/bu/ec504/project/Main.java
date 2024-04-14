@@ -22,12 +22,18 @@ public class Main {
             }
         }
         Molecule tester = new Molecule(filename);
+        if (moleculeArrayList.get(0).isSubGraphPresent(tester) != null  ) {
+            System.out.println("works");
+        }
+        /*
         for(Molecule f: moleculeArrayList) {
             Molecule testing = new Molecule(filename);
-            if (moleculeArrayList.get(0).areMoleculesEqual(testing) == null) {
-                System.out.println("err");
+            if (moleculeArrayList.get(0).isSubGraphPresent(testing) != null) {
+                System.out.println("subfound");
             }
         }
+
+         */
     }
 
 }

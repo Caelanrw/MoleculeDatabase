@@ -81,6 +81,13 @@ public class MoleculeDatabase {
         return null; // Return null if molecule not found
     }
 
+
+    public ArrayList<Molecule> findSubgraph(Molecule molecule) {
+        ArrayList<Molecule> returnList = new ArrayList<Molecule>();
+
+
+        return returnList;
+    }
     /**
      * Save database to file system
      */
