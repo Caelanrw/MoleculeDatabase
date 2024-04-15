@@ -84,7 +84,17 @@ public class MoleculeDatabase {
 
     public ArrayList<Molecule> findSubgraph(Molecule molecule) {
         ArrayList<Molecule> returnList = new ArrayList<Molecule>();
-
+        int startingNumber = molecule.getNumAtoms();
+        for(int ii : db.keySet()) {
+            if (ii >= startingNumber) {
+                for(Molecule m: db.get(ii)) {
+                    if(m.isSubGraphPresent(molecule) != null) {
+                        returnList.add(m);
+                        System.out.println(m.moleculeName);
+                    }
+                }
+            }
+        }
 
         return returnList;
     }
