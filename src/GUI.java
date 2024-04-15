@@ -18,8 +18,6 @@ public class GUI extends JFrame {
     private JTextField filePathField;
     private static MDB moleculeDb;
     private Socket clientSocket;
-    private PrintWriter writer;
-    private BufferedReader reader;
 
     /**
      * GUI constructor
@@ -61,7 +59,7 @@ public class GUI extends JFrame {
         add(scrollPane, BorderLayout.CENTER); // to show the printed output text area
 
         // Initialize molecule database
-        MDB moleculeDb = new MDB(outputTextArea);
+        moleculeDb = new MDB(outputTextArea);
 
         // Action listener for Choose File button
         chooseFileButton.addActionListener(new ActionListener() {
@@ -117,12 +115,16 @@ public class GUI extends JFrame {
 
                 // Get the API for the molecule
                 String moleculePath = filePathField.getText();
-                // Split the file path by "/"
-                String[] parts = moleculePath.split("/");
-                // Extract the filename (last part of the path)
-                String filename = parts[parts.length - 1];
-                // Remove the file extension (.txt) to get the molecule name
-                String moleculeName = filename.replace(".txt", "");
+                String moleculeName = null;
+
+                try (BufferedReader reader = new BufferedReader(new FileReader(moleculePath))) {
+                    moleculeName = reader.readLine(); // Read the first line to get the molecule name
+                } catch (IOException ex) {
+                    System.err.println("Error reading the file: " + ex.getMessage());
+                    return;
+                }
+
+                // https://cactus.nci.nih.gov/chemical/structure/isopropanol/image
                 String imageURL = "https://cactus.nci.nih.gov/chemical/structure/" + moleculeName + "/image";
 
                 try {
@@ -140,8 +142,10 @@ public class GUI extends JFrame {
                     imageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     imageFrame.setLocationRelativeTo(null); // Center the frame
                     imageFrame.setVisible(true); // Make the frame visible
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
+                    outputTextArea.append("Molecule display failed. The provided molecule name may be incorrect or does not match any records in the PubChem database.\n\n");
                 }
             }
         });
@@ -154,6 +158,18 @@ public class GUI extends JFrame {
             }
         });
 
+        // Add window listener to save the database before closing the window
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    moleculeDb.save("molecule.db"); // save the database
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         // Connect to client or server
         connectToServerOrClient();
 
@@ -161,6 +177,14 @@ public class GUI extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+
+        // Load database on startup
+        try {
+            initDb("molecule.db");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -173,25 +197,13 @@ public class GUI extends JFrame {
             writer = new PrintWriter(clientSocket.getOutputStream(), true);
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (ConnectException e) {
-            // If a client connection fails, run the server side of the program
+            // Run the server side
             try {
                 ServerSocket serverSocket = new ServerSocket(5000);
                 serverSocket.setSoTimeout(60 * 1000);
 
-                // Set the default filename for the database
-                String dbName = "molecule.db";
-
-                // Initialize the database
-                initDb(dbName);
-
-                // Accept incoming client connections
-                clientSocket = serverSocket.accept();
-                writer = new PrintWriter(clientSocket.getOutputStream(), true);
-                reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
                 // Close the server socket after accepting the connection
                 serverSocket.close();
-                moleculeDb.save(dbName); // save the database
 
             } catch (IOException ex) {
                 ex.printStackTrace();
