@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A class represents the molecule database that works with the GUI
+ * A class represents the molecule database that works with the GUI.
  */
 public class MDB {
 
@@ -37,6 +37,9 @@ public class MDB {
             size += molecules.size();
         }
         outputTextArea.append("# of molecules: " + size + "\n\n");
+
+        if (size == 0)
+            return; // if database is empty, exit early
 
         // Print the list of molecules
         outputTextArea.append("List of molecules: " + "\n\n");
