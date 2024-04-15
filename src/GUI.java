@@ -160,7 +160,7 @@ public class GUI extends JFrame {
             }
         });
 
-        // Add window listener to save the database before closing the window
+        // Window listener to save the database before closing the GUI
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
