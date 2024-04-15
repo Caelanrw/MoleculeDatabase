@@ -18,6 +18,8 @@ public class GUI extends JFrame {
     private JTextField filePathField;
     private static MDB moleculeDb;
     private Socket clientSocket;
+    private PrintWriter writer;
+    private BufferedReader reader;
 
     /**
      * GUI constructor
