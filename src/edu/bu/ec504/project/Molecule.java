@@ -123,6 +123,94 @@ public class Molecule implements Serializable {
         return this;
     }
 
+
+    /**
+     * Finds the Most Similar Molecule
+     */
+    public int mostSimilar(Molecule otherMolecule) {
+
+        int similarity=0; //counts similarity points
+
+        // Points for an intersection of elements between this and otherMolecule
+        for(int i=0;i<this.numElements.length;i++)
+        {
+            similarity+= Math.min( this.numElements[i], otherMolecule.numElements[i]);
+        }
+
+        //Points for same number of atoms
+        if(this.numAtoms==otherMolecule.numAtoms)
+        {
+            similarity++;
+        }
+
+        //Points for same number of edges
+        if(this.numEdges==otherMolecule.numEdges)
+        {
+            similarity++;
+        }
+
+
+        // Clean the otherMolecule atom list of any marked atoms
+        for(Atom cleanAtom : otherMolecule.atomArrayList)
+        {
+            cleanAtom.marked = false;
+
+            //clean the connected arraylist
+            for(int i=0;i<cleanAtom.connectedMarked.size();i++)
+            {
+                cleanAtom.connectedMarked.set(i,false);
+            }
+        }
+        // Clean the dbMolecule atom list of any marked atoms
+
+        // Compare the atom lists
+        for(Atom dbAtom : this.atomArrayList) {
+            boolean matchingEdge=false;
+
+            for (Atom newAtom : otherMolecule.atomArrayList) {
+
+                if (newAtom.elementType == dbAtom.elementType) { //Check if elements are the same
+                    boolean [] edgeMarked = new boolean[newAtom.connected.size()];
+                    // Compare connected of each atom
+                    //for each connected atom in dbAtom
+                    for (Atom.ElemOrderPair dbValues : dbAtom.connected.values()) {
+                        int marker=0;
+
+                        for (Atom.ElemOrderPair newAtomValues : newAtom.connected.values()) {
+                            //if its a match
+                            //if first 2 yes, add points for min of bondOrder between the 2
+                            if (!newAtom.connectedMarked.get(marker) && !edgeMarked[marker] && dbValues.eType == newAtomValues.eType )
+                            {
+                                if( dbValues.bondOrder == newAtomValues.bondOrder)
+                                {
+                                    //mark the newAtom edge as already found
+                                    newAtom.connectedMarked.set(marker,true);
+                                    matchingEdge=true;
+                                    edgeMarked[marker]=true;
+                                    similarity++; //add a point for each edge that is the same
+                                    break;
+                                }
+
+                            }
+                            marker++;
+
+                        }
+                    }
+
+                }
+
+                if(matchingEdge)
+                {
+                    break;
+                }
+            }
+
+        }
+
+        // If all comparisons passed, the molecules are equal
+        return similarity;
+    }
+
     /**
      * Return number of atoms of the molecule
      */
