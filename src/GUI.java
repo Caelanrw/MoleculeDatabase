@@ -127,6 +127,7 @@ public class GUI extends JFrame {
                     moleculeName = reader.readLine(); // Read the first line to get the molecule name
                 } catch (IOException ex) {
                     System.err.println("Error reading the file: " + ex.getMessage());
+                    outputTextArea.append("Error reading the file." + "\n\n");
                     return;
                 }
 
