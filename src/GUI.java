@@ -100,12 +100,16 @@ public class GUI extends JFrame {
                 String moleculePath = filePathField.getText();
                 // Execute the findMolecule command
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
-                // Display the result in the output text area
                 if (molecule == null) {
-                    outputTextArea.append("NOT FOUND\n\n");
+                    outputTextArea.append("NO EXACT MATCH FOUND" + "\n\n");
+                    molecule= moleculeDb.similarMolecule(new Molecule(moleculePath));
+                    if(molecule!=null)
+                    {
+                        // Perform most similar function
+                        outputTextArea.append(molecule.moleculeName + " is the most similar" + "\n\n");
+                    }
                 } else {
                     outputTextArea.append("FOUND\n\n");
-                    outputTextArea.append("Molecule found: " + moleculePath + "\n\n");
                 }
             }
         });
