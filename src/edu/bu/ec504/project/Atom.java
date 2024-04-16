@@ -10,6 +10,7 @@ public class Atom implements Serializable {
         atomName = name;
         degree = 0;
         connected = new HashMap<>();
+        connectedMarked= new ArrayList<>();
         elementType = elem;
         marked = false;
     }
@@ -18,8 +19,10 @@ public class Atom implements Serializable {
         if(connected.containsKey(i.getName())) {
             connected.put(i.getName(),new ElemOrderPair(i.elementType,connected.get(i.getName()).bondOrder+1));
         }
-        else
-            connected.put(i.getName(),new ElemOrderPair(i.elementType,1));
+        else {
+            connected.put(i.getName(), new ElemOrderPair(i.elementType, 1));
+            connectedMarked.add(false);
+        }
     }
     public String getName() {
         return this.atomName;
@@ -28,6 +31,7 @@ public class Atom implements Serializable {
     public int elementType;
     public int degree;
     public Map<String,ElemOrderPair> connected;
+    public ArrayList<Boolean> connectedMarked;
     public boolean marked;
 
 
