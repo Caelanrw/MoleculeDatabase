@@ -169,7 +169,7 @@ public class Molecule implements Serializable {
 
             for (Atom newAtom : otherMolecule.atomArrayList) {
 
-                if (newAtom.elementType == dbAtom.elementType) { //Check if elements are the same
+                if (!newAtom.marked && newAtom.elementType == dbAtom.elementType) { //Check if elements are the same
                     boolean [] edgeMarked = new boolean[newAtom.connected.size()];
                     // Compare connected of each atom
                     //for each connected atom in dbAtom
@@ -201,6 +201,7 @@ public class Molecule implements Serializable {
 
                 if(matchingEdge)
                 {
+                    newAtom.marked=true;
                     break;
                 }
             }
