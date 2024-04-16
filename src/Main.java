@@ -1,177 +1,264 @@
 import edu.bu.ec504.project.Molecule;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
-import java.net.ConnectException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
-public class Main {
+public class GUI extends JFrame {
+    private JTextArea outputTextArea;
+    private JButton chooseFileButton;
+    private JButton addMoleculeButton;
+    private JButton findMoleculeButton;
+    private JButton statisticsButton;
+    private JButton displayMoleculeButton;
+    private JButton findSubgraphButton;
+    private JTextField filePathField;
+    private static MDB moleculeDb;
+    private Socket clientSocket;
+    private PrintWriter writer;
+    private BufferedReader reader;
 
-    static MoleculeDatabase moleculeDb = null;
-    static boolean verbose = false;
+    /**
+     * GUI constructor
+     */
+    public GUI() {
+        // Set up the JFrame
+        setTitle("Molecule Database");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(Color.BLACK);
 
-    public static void initDb(String dbName) throws IOException {
+        // Create components
+        outputTextArea = new JTextArea(20, 50); // the text area for all outputs
+        outputTextArea.setBackground(Color.BLACK); // Set the background color of the text area
+        outputTextArea.setForeground(Color.WHITE); // Set the text color
+        JScrollPane scrollPane = new JScrollPane(outputTextArea);
+        chooseFileButton = new JButton("Choose File");
+        addMoleculeButton = new JButton("Add Molecule");
+        findMoleculeButton = new JButton("Find Molecule");
+        findSubgraphButton = new JButton("Find Subgraph");
+        statisticsButton = new JButton("Database Statistics");
+        displayMoleculeButton = new JButton("Display Molecule");
+        filePathField = new JTextField(20); // to show the file path
+        JLabel filePathLabel = new JLabel("File Path:");
+        filePathLabel.setForeground(Color.WHITE); // Set the text color
+        filePathField.setBackground(Color.WHITE); // Set the background color of the text field
+        filePathField.setForeground(Color.BLACK); // Set the text color
+
+        // Add components to the JFrame
+        JPanel controlPanel = new JPanel();
+        controlPanel.setBackground(Color.BLACK);
+        controlPanel.add(chooseFileButton);
+        controlPanel.add(addMoleculeButton);
+        controlPanel.add(findMoleculeButton);
+        controlPanel.add(findSubgraphButton);
+        controlPanel.add(displayMoleculeButton);
+        controlPanel.add(statisticsButton);
+        controlPanel.add(filePathLabel);
+        controlPanel.add(filePathField);
+        add(controlPanel, BorderLayout.NORTH); // to show the control panel (e.g., buttons)
+        add(scrollPane, BorderLayout.CENTER); // to show the printed output text area
+
+        // Initialize molecule database
+        moleculeDb = new MDB(outputTextArea);
+
+        // Action listener for Choose File button
+        chooseFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create a file chooser
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Choose a file");
+                int result = fileChooser.showOpenDialog(GUI.this);
+                // If a file is selected, set its path in the molecule path field
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    filePathField.setText(selectedFile.getAbsolutePath());
+                }
+            }
+        });
+
+        // Action listener for Add Molecule button
+        addMoleculeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the molecule path from the text field
+                String moleculePath = filePathField.getText();
+                // Execute the addMolecule command
+                moleculeDb.addMolecule(new Molecule(moleculePath));
+                // Display output
+                outputTextArea.append("Molecule added: " + moleculePath + "\n\n");
+            }
+        });
+
+        // Action listener for Find Molecule button
+        findMoleculeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the molecule path from the text field
+                String moleculePath = filePathField.getText();
+                // Execute the findMolecule command
+                Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
+                if (molecule == null) {
+                    outputTextArea.append("NO EXACT MATCH FOUND" + "\n\n");
+                    molecule= moleculeDb.similarMolecule(new Molecule(moleculePath));
+                    if(molecule!=null)
+                    {
+                        // Perform most similar function
+                        outputTextArea.append(molecule.moleculeName + " is the most similar" + "\n\n");
+                    }
+                } else {
+                    outputTextArea.append("FOUND\n\n");
+                }
+            }
+        });
+
+        // Action listener for Find Subgraph button
+        findSubgraphButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String moleculePath = filePathField.getText();
+                ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
+                if (mList.isEmpty())
+                    outputTextArea.append("No subraphs found" + "\n\n");
+                else
+                    for (Molecule m : mList)
+                        outputTextArea.append("Subgraph found: " + m.moleculeName + "\n\n");
+            }
+        });
+
+        // Action listener for Display Molecule button
+        displayMoleculeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Get the API for the molecule
+                String moleculePath = filePathField.getText();
+                String moleculeName = null;
+
+                try (BufferedReader reader = new BufferedReader(new FileReader(moleculePath))) {
+                    moleculeName = reader.readLine(); // Read the first line to get the molecule name
+                } catch (IOException ex) {
+                    System.err.println("Error reading the file: " + ex.getMessage());
+                    outputTextArea.append("Error reading the file." + "\n\n");
+                    return;
+                }
+
+                // https://cactus.nci.nih.gov/chemical/structure/isopropanol/image
+                String imageURL = "https://cactus.nci.nih.gov/chemical/structure/" + moleculeName + "/image";
+
+                try {
+                    // Download the image from the URL
+                    URL url = new URL(imageURL);
+                    BufferedImage image = ImageIO.read(url);
+
+                    // Create a JLabel to display the image
+                    JLabel imageLabel = new JLabel(new ImageIcon(image));
+
+                    // Create a new JFrame to display the image
+                    JFrame imageFrame = new JFrame("Molecule Display");
+                    imageFrame.getContentPane().add(imageLabel, BorderLayout.CENTER);
+                    imageFrame.setSize(400, 400);
+                    imageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    imageFrame.setLocationRelativeTo(null); // Center the frame
+                    imageFrame.setVisible(true); // Make the frame visible
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    outputTextArea.append("Molecule display failed. The provided molecule name may be incorrect or does not match any records in the PubChem database.\n\n");
+                }
+            }
+        });
+
+        // Action listener for Statistics button
+        statisticsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moleculeDb.printDb(); // print the content of database
+            }
+        });
+
+        // Window listener to save the database before closing the GUI
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    moleculeDb.save("molecule.db"); // save the database
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // Connect to client or server
+        connectToServerOrClient();
+
+        // Display the JFrame
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        // Load database on startup
+        try {
+            initDb("molecule.db");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Run as client or server
+     */
+    private void connectToServerOrClient() {
+        try {
+            // Run the client side
+            clientSocket = new Socket("localhost", 5000);
+            writer = new PrintWriter(clientSocket.getOutputStream(), true);
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (ConnectException e) {
+            // Run the server side
+            try {
+                ServerSocket serverSocket = new ServerSocket(5000);
+                serverSocket.setSoTimeout(60 * 1000);
+
+                // Close the server socket after accepting the connection
+                serverSocket.close();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Initialize a database
+     */
+    public void initDb(String dbName) throws IOException {
         // Load the database
-        moleculeDb = new MoleculeDatabase();
+        moleculeDb = new MDB(outputTextArea);
         File dbFile = new File(dbName);
         if (dbFile.exists()) {
             moleculeDb.load(dbName);
         }
     }
 
-    public static void printVerbose(String s) {
-        if (verbose) {
-            System.out.println(s);
-        }
-    }
-
-    public static void commandHandler1(String cmd) {
-        switch (cmd) {
-            case "--printDb":
-                moleculeDb.printDb();
-                break;
-            case "--verbose":
-                if (verbose) {
-                    System.out.println("verbose: true -> false");
-                } else {
-                    System.out.println("verbose: false -> true");
-                }
-                verbose = !verbose;
-                moleculeDb.verbose = verbose;
-                break;
-            default:
-                printVerbose("unrecognized command: " + cmd);
-                break;
-        }
-    }
-
-    public static void commandHandler2(String cmd, String moleculePath) {
-        switch (cmd) {
-            case "--addMolecule":
-                moleculeDb.addMolecule(new Molecule(moleculePath));
-                break;
-            case "--findMolecule":
-                Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
-                if (molecule == null) {
-                    System.out.println("NO EXACT MATCH FOUND");
-                    molecule= moleculeDb.similarMolecule(new Molecule(moleculePath));
-                    if(molecule!=null)
-                    {
-                        System.out.println(molecule.moleculeName + " is the most similar");
-                    }
-                } else {
-                    printVerbose("FOUND");
-                }
-                break;
-            default:
-                printVerbose("unrecognized command: " + cmd);
-                break;
-        }
-    }
-
     /**
-     * Method to run the client side of the program
-     *
-     * @param clientSocket
-     * @param argument
-     * @throws IOException
+     * Main function
      */
-    public static void runClient(Socket clientSocket, String argument) throws IOException {
-        // Set up output stream to send data to the server
-        OutputStream outStream = clientSocket.getOutputStream();
-        PrintWriter writer = new PrintWriter(outStream);
-
-        // Write the argument to the output stream
-        writer.println(argument);
-        writer.flush();
-
-        // Close the streams
-        writer.close();
-        outStream.close();
-    }
-
-    /**
-     * Method to run the server side of the program
-     */
-    public static void runServer(ServerSocket serverSocket, String cmd, String moleculePath,
-                                 String dbName) throws IOException {
-        // Continue processing commands until "--quit" command is received
-        while (!cmd.equals("--quit")) {
-            // Perform actions based on the received command
-            if (moleculePath.isEmpty()) {
-                commandHandler1(cmd);
-            } else {
-                commandHandler2(cmd, moleculePath);
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                GUI gui = new GUI();
             }
-
-            // Accept incoming client connections
-            Socket clientSocket;
-            try {
-                clientSocket = serverSocket.accept();
-            } catch (IOException e) {
-                System.out.println("connection timed out");
-                break;
-            }
-            InputStream inStream = clientSocket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
-            String[] args = reader.readLine().split(" ");
-
-            // close the streams
-            reader.close();
-            inStream.close();
-            clientSocket.close();
-
-            // parse argument from client
-            cmd = args[0];
-            moleculePath = "";
-            if (args.length > 1) {
-                moleculePath = args[1];
-            }
-        }
-
-        // save the database before exiting
-        moleculeDb.save(dbName);
-        System.out.println("Database saved successfully.");
-        System.out.println("Goodbye");
-    }
-
-    /**
-     * Main method to start the program
-     */
-    public static void main(String[] args) throws IOException {
-        final int ARG_COUNT = args.length;
-
-        // Get the port number from the command line arguments
-        final int PORT_NUMBER = Integer.parseInt(args[0]);
-
-        // get other command line arguments
-        String cmd = args[1];
-        String moleculePath = "";
-        if (ARG_COUNT > 2) {
-            moleculePath = args[2];
-        }
-
-        // run as client or server
-        try (Socket clientSocket = new Socket("localhost", PORT_NUMBER)) {
-            // If a client connection is successful, run the client side of the program
-            runClient(clientSocket, cmd + " " + moleculePath);
-        } catch (ConnectException e) {
-            // If a client connection fails, run the server side of the program
-            ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-            serverSocket.setSoTimeout(60 * 1000);
-
-            // Set the default filename for the database
-            String dbName = "molecule.db";
-
-            // Check if an alternative filename is provided as a command line argument
-            if (ARG_COUNT > 3) {
-                dbName = args[3];
-            }
-
-            // initialize database and start server
-            initDb(dbName);
-            runServer(serverSocket, cmd, moleculePath, dbName);
-            serverSocket.close();
-        }
+        });
     }
 }
