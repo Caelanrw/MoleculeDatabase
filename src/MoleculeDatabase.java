@@ -81,7 +81,11 @@ public class MoleculeDatabase {
         return null; // Return null if molecule not found
     }
 
-
+    /**
+     * Find all molecules that contain the @param subgraph
+     * @param molecule subgraph
+     * @return List of molecules that contain subgraph
+     */
     public ArrayList<Molecule> findSubgraph(Molecule molecule) {
         ArrayList<Molecule> returnList = new ArrayList<Molecule>();
         int startingNumber = molecule.getNumAtoms();

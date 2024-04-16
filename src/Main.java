@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -57,6 +58,14 @@ public class Main {
                 } else {
                     printVerbose("FOUND");
                 }
+                break;
+            case "--findSubgraph":
+                ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
+                if (mList.isEmpty())
+                    System.out.println("No subraphs found");
+                else
+                    for(Molecule m: mList)
+                        System.out.println(m.moleculeName);
                 break;
             default:
                 printVerbose("unrecognized command: " + cmd);
