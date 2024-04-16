@@ -53,7 +53,12 @@ public class Main {
             case "--findMolecule":
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
                 if (molecule == null) {
-                    System.out.println("NOT FOUND");
+                    System.out.println("NO EXACT MATCH FOUND");
+                    molecule= moleculeDb.similarMolecule(new Molecule(moleculePath));
+                    if(molecule!=null)
+                    {
+                        System.out.println(molecule.moleculeName + " is the most similar");
+                    }
                 } else {
                     printVerbose("FOUND");
                 }
