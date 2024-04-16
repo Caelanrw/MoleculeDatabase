@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class GUI extends JFrame {
     private JTextArea outputTextArea;
@@ -15,6 +16,7 @@ public class GUI extends JFrame {
     private JButton findMoleculeButton;
     private JButton statisticsButton;
     private JButton displayMoleculeButton;
+    private JButton findSubgraphButton;
     private JTextField filePathField;
     private static MDB moleculeDb;
     private Socket clientSocket;
@@ -39,6 +41,7 @@ public class GUI extends JFrame {
         chooseFileButton = new JButton("Choose File");
         addMoleculeButton = new JButton("Add Molecule");
         findMoleculeButton = new JButton("Find Molecule");
+        findSubgraphButton = new JButton("Find Subgraph");
         statisticsButton = new JButton("Database Statistics");
         displayMoleculeButton = new JButton("Display Molecule");
         filePathField = new JTextField(20); // to show the file path
@@ -53,6 +56,7 @@ public class GUI extends JFrame {
         controlPanel.add(chooseFileButton);
         controlPanel.add(addMoleculeButton);
         controlPanel.add(findMoleculeButton);
+        controlPanel.add(findSubgraphButton);
         controlPanel.add(displayMoleculeButton);
         controlPanel.add(statisticsButton);
         controlPanel.add(filePathLabel);
@@ -111,6 +115,20 @@ public class GUI extends JFrame {
                 } else {
                     outputTextArea.append("FOUND\n\n");
                 }
+            }
+        });
+
+        // Action listener for Find Subgraph button
+        findSubgraphButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String moleculePath = filePathField.getText();
+                ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
+                if (mList.isEmpty())
+                    outputTextArea.append("No subraphs found" + "\n\n");
+                else
+                    for (Molecule m : mList)
+                        outputTextArea.append("Subgraph found: " + m.moleculeName + "\n\n");
             }
         });
 
