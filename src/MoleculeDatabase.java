@@ -112,7 +112,9 @@ public class MoleculeDatabase {
     }
 
     /**
-     * Find subgraph
+     * Find all molecules that contain the @param subgraph
+     * @param molecule subgraph
+     * @return List of molecules that contain subgraph
      */
     public ArrayList<Molecule> findSubgraph(Molecule molecule) {
         ArrayList<Molecule> returnList = new ArrayList<Molecule>();
@@ -130,6 +132,7 @@ public class MoleculeDatabase {
 
         return returnList;
     }
+
 
     /**
      * Save database to file system
@@ -156,5 +159,54 @@ public class MoleculeDatabase {
         }
         objInStream.close();
         fileInStream.close();
+    }
+
+    /**
+     * Get database statistics as a string
+     * Note: this method is designed to work with the webpage
+     */
+    public String showDb() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // Print number of molecules
+        int size = 0;
+        for (ArrayList<Molecule> molecules : db.values()) {
+            size += molecules.size();
+        }
+        stringBuilder.append("# of molecules: ").append(size).append("\n\n");
+
+        if (size == 0)
+            return stringBuilder.toString(); // if database is empty, return early
+
+        // Print the list of molecules
+        stringBuilder.append("List of molecules: ").append("\n\n");
+        for (Integer atomCount : this.db.keySet()) {
+            ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
+            for (Molecule molecule : moleculesWithSameNumAtoms) {
+                stringBuilder.append("Molecule name: ").append(molecule.moleculeName).append("\n");
+                stringBuilder.append("# of atoms: ").append(atomCount.toString()).append("\n\n");
+            }
+        }
+
+        // Print the largest and smallest molecules
+        int maxAtoms = Integer.MIN_VALUE;
+        int minAtoms = Integer.MAX_VALUE;
+        Molecule largestMolecule = null;
+        Molecule smallestMolecule = null;
+        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
+            int numAtoms = entry.getKey();
+            if (numAtoms > maxAtoms) {
+                maxAtoms = numAtoms;
+                largestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+            if (numAtoms < minAtoms) {
+                minAtoms = numAtoms;
+                smallestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+        }
+        stringBuilder.append("Smallest molecule: ").append(smallestMolecule.moleculeName).append("\n");
+        stringBuilder.append("Largest molecule: ").append(largestMolecule.moleculeName).append("\n\n");
+
+        return stringBuilder.toString();
     }
 }
