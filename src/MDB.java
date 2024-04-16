@@ -114,6 +114,55 @@ public class MDB {
     }
 
     /**
+     * Find the most similar Molecule from the database
+     */
+    public Molecule similarMolecule(Molecule molecule) {
+
+        // If an exact match is not found then find the most similar
+        int maxResult=0;
+        Molecule similar=null;
+        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
+            // Access the key and value of each entry
+            Integer numberAtoms = entry.getKey();
+
+            //only check for similarity if they have similar number of atoms within tolerance of 100
+            if( (molecule.getNumAtoms()-100)<numberAtoms && numberAtoms<(molecule.getNumAtoms()+100) )
+            {
+                for (Molecule dbMolecule : db.get(numberAtoms)) {
+                    int res = dbMolecule.mostSimilar(molecule);
+                    if (res > maxResult) {
+                        similar = dbMolecule; // save the similar molecule
+                        maxResult = res;
+                    }
+                }
+            }
+        }
+
+        return similar;
+    }
+
+    /**
+     * Find subgraph
+     */
+    public ArrayList<Molecule> findSubgraph(Molecule molecule) {
+        ArrayList<Molecule> returnList = new ArrayList<Molecule>();
+        int startingNumber = molecule.getNumAtoms();
+        for(int ii : db.keySet()) {
+            if (ii >= startingNumber) {
+                for(Molecule m: db.get(ii)) {
+                    if(m.isSubGraphPresent(molecule) != null) {
+                        returnList.add(m);
+                        outputTextArea.append(m.moleculeName + "\n\n");
+                    }
+                }
+            }
+        }
+
+        return returnList;
+    }
+
+
+    /**
      * Save database to file system
      */
     public void save(String filename) throws IOException {
