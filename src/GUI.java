@@ -92,18 +92,18 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Get the molecule path from the text field
-                String moleculePath = filePathField.getText();
-                outputTextArea.append("molecule path is " + moleculePath + "\n\n"); // this is here for debug, delete once finish
+                // Input format for the file path is "start,end" where 'start' and 'end' are the starting and ending CID indices of molecules in PubChem
+                // For example, enter 12,24 to download molecules 12-24
+                String twoIndices = filePathField.getText();
 
                 // Repurposed moleculePath should be in format "start,end"
-                String[] indexes = moleculePath.split(",");
+                String[] indexes = twoIndices.split(",");
 
                 if (indexes.length == 2) {
                     String start = indexes[0];
                     String end = indexes[1];
                     moleculeDb.downloadPubChem(start, end);
                 } else {
-                    outputTextArea.append("indexes are " + Arrays.toString(indexes) + "\n\n"); // this is here for debug, delete once finish
                     outputTextArea.append("Invalid Input" + "\n\n");
                 }
             }
