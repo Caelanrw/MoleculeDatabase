@@ -280,6 +280,9 @@ public class Molecule implements Serializable {
         return numAtoms;
     }
 
+    public ArrayList<Atom> getAtomArrayList() {
+        return  atomArrayList;
+    }
 
     class subGraphNode implements Serializable {
         public subGraphNode parent;

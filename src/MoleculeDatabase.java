@@ -1,3 +1,4 @@
+import edu.bu.ec504.project.Atom;
 import edu.bu.ec504.project.Molecule;
 
 import java.io.FileInputStream;
@@ -49,6 +50,13 @@ public class MoleculeDatabase {
             return;
         }
         int numAtoms = molecule.getNumAtoms();
+        //test if molecule has an unconnected atom
+        for(Atom a: molecule.getAtomArrayList())
+            if(a.connected.isEmpty()) {
+                printVerbose("ERR: molecule file is incorrect (contains unconnected atom)");
+                return;
+            }
+
         if (this.db.containsKey(numAtoms)) {
             this.db.get(numAtoms).add(molecule);
         } else {
