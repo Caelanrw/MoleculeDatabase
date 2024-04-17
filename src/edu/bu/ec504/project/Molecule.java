@@ -69,11 +69,13 @@ public class Molecule implements Serializable {
 
         // Compare the number of elements
         if (!Arrays.equals(this.numElements, otherMolecule.numElements)) {
+//            System.out.println("different numElements");
             return null; // Number of elements is different, molecules are not equal
         }
 
         // Compare the number of edges
         if (this.numEdges != otherMolecule.numEdges) {
+//            System.out.println("different numEdges");
             return null; // Number of edges is different, molecules are not equal
         }
 
@@ -123,6 +125,7 @@ public class Molecule implements Serializable {
         // If all comparisons passed, the molecules are equal
         return this;
     }
+
 
 
     /**
@@ -341,14 +344,19 @@ public class Molecule implements Serializable {
             }
 
         }
-    }
 
+    }
+    
 
     /**
      * Return number of atoms of the molecule
      */
     public int getNumAtoms() {
         return numAtoms;
+    }
+
+    public ArrayList<Atom> getAtomArrayList() {
+        return  atomArrayList;
     }
 
     class subGraphNode implements Serializable {
@@ -361,7 +369,6 @@ public class Molecule implements Serializable {
             this.options = new ArrayList<Atom>();
         }
     };
-
 
 }
 
