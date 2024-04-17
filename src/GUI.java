@@ -17,6 +17,7 @@ public class GUI extends JFrame {
     private JButton statisticsButton;
     private JButton displayMoleculeButton;
     private JButton findSubgraphButton;
+    private JButton downloadPubChemButton;
     private JTextField filePathField;
     private static MDB moleculeDb;
     private Socket clientSocket;
@@ -39,6 +40,7 @@ public class GUI extends JFrame {
         outputTextArea.setForeground(Color.WHITE); // Set the text color
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
         chooseFileButton = new JButton("Choose File");
+        downloadPubChemButton = new JButton("Download PubChem");
         addMoleculeButton = new JButton("Add Molecule");
         findMoleculeButton = new JButton("Find Molecule");
         findSubgraphButton = new JButton("Find Subgraph");
@@ -54,6 +56,7 @@ public class GUI extends JFrame {
         JPanel controlPanel = new JPanel();
         controlPanel.setBackground(Color.BLACK);
         controlPanel.add(chooseFileButton);
+        controlPanel.add(downloadPubChemButton);
         controlPanel.add(addMoleculeButton);
         controlPanel.add(findMoleculeButton);
         controlPanel.add(findSubgraphButton);
@@ -79,6 +82,28 @@ public class GUI extends JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     filePathField.setText(selectedFile.getAbsolutePath());
+                }
+            }
+        });
+
+        // Action listener for Download PubChem button
+        downloadPubChemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the molecule path from the text field
+                String moleculePath = filePathField.getText();
+                outputTextArea.append("molecule path is " + moleculePath); // this is here for debug, delete once finish
+
+                // Repurposed moleculePath should be in format "start,end"
+                String[] indexes = moleculePath.split(",");
+                outputTextArea.append("indexes are " + indexes + "\n\n"); // this is here for debug, delete once finish
+
+                if (indexes.length == 2) {
+                    String start = indexes[0];
+                    String end = indexes[1];
+                    moleculeDb.downloadPubChem(start, end);
+                } else {
+                    outputTextArea.append("Invalid Input" + "\n\n");
                 }
             }
         });
