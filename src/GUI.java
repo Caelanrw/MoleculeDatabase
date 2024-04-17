@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GUI extends JFrame {
     private JTextArea outputTextArea;
@@ -92,17 +93,17 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Get the molecule path from the text field
                 String moleculePath = filePathField.getText();
-                outputTextArea.append("molecule path is " + moleculePath); // this is here for debug, delete once finish
+                outputTextArea.append("molecule path is " + moleculePath + "\n\n"); // this is here for debug, delete once finish
 
                 // Repurposed moleculePath should be in format "start,end"
                 String[] indexes = moleculePath.split(",");
-                outputTextArea.append("indexes are " + indexes + "\n\n"); // this is here for debug, delete once finish
 
                 if (indexes.length == 2) {
                     String start = indexes[0];
                     String end = indexes[1];
                     moleculeDb.downloadPubChem(start, end);
                 } else {
+                    outputTextArea.append("indexes are " + Arrays.toString(indexes) + "\n\n"); // this is here for debug, delete once finish
                     outputTextArea.append("Invalid Input" + "\n\n");
                 }
             }
