@@ -31,9 +31,9 @@ def processContent(content):
             new_content += line
     return new_content
 
-def writeMolecule(mol_name, smiles):
+def writeMolecule(chemID, mol_name, smiles):
     mol_with_H = read_smiles(smiles, explicit_hydrogen=True)
-    file_path_mol = "./testcases/molecules/" + mol_name + ".txt"
+    file_path_mol = "./testcases/molecules/molecule" + chemID + ".txt"
     
     nx.write_edgelist(mol_with_H, file_path_mol)
     
@@ -85,8 +85,9 @@ def writePubChem(start, end):
             
             for chemical in page_text['PropertyTable']['Properties']:
                 # check if desired keys are in the json
-                if 'CanonicalSMILES' in chemical:
-                    mol_name = "molecule" + str(chemical['CID'])
+                if 'CanonicalSMILES' in chemical and 'Title' in chemical:
+                    chemID = str(chemical["CID"])
+                    mol_name = str(chemical['Title'])
                     smiles = chemical['CanonicalSMILES']
                     # ignore Hydrogen Molecules
                     if smiles == "[HH]":
@@ -94,7 +95,7 @@ def writePubChem(start, end):
                     
                     # print("molecule "+ str(chemical['CID']) + ": " +  mol_name + "\t" + "smiles: " + smiles)
                 
-                    writeMolecule(mol_name, smiles)
+                    writeMolecule(chemID, mol_name, smiles)
         else:
             print("Failed to retrieve the page. Status code:", response.status_code)
 
