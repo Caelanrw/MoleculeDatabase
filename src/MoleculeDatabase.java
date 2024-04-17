@@ -1,12 +1,9 @@
 import edu.bu.ec504.project.Molecule;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -133,6 +130,42 @@ public class MoleculeDatabase {
         return returnList;
     }
 
+    /**
+     * Download Molecules from PubChem in range [start, end]
+     */
+
+    public void downloadPubChem(String start, String end) {
+        String scriptPath = "testcases/downloadPubChem.py";
+        List<String> filenames = new ArrayList<>();
+
+        try {
+            // build Python script call
+            ProcessBuilder builder = new ProcessBuilder("python", scriptPath, start, end);
+            Process process = builder.start();
+
+            // get Python filename output
+            InputStream stdout = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
+
+            String file;
+            while ((file = reader.readLine()) != null) {
+                printVerbose("file created: " + file);
+                filenames.add(file);
+            }
+
+            int exitCode = process.waitFor();
+            printVerbose("Exited with code: " + exitCode);
+
+            // add created files to the database
+            for (String filename : filenames) {
+                this.addMolecule(new Molecule(filename));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     /**
      * Save database to file system
