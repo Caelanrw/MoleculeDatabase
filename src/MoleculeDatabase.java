@@ -1,3 +1,4 @@
+import edu.bu.ec504.project.Atom;
 import edu.bu.ec504.project.Molecule;
 
 import java.io.*;
@@ -47,6 +48,13 @@ public class MoleculeDatabase {
             return;
         }
         int numAtoms = molecule.getNumAtoms();
+        //test if molecule has an unconnected atom
+        for(Atom a: molecule.getAtomArrayList())
+            if(a.connected.isEmpty()) {
+                printVerbose("Error: molecule file is incorrect (contains unconnected atom)");
+                return;
+            }
+
         if (this.db.containsKey(numAtoms)) {
             this.db.get(numAtoms).add(molecule);
         } else {
@@ -55,6 +63,7 @@ public class MoleculeDatabase {
             this.db.put(numAtoms, moleculesWithSameNumAtoms);
         }
     }
+
 
     /**
      * Find isomorphic molecule from the database
@@ -133,7 +142,6 @@ public class MoleculeDatabase {
     /**
      * Download Molecules from PubChem in range [start, end]
      */
-
     public void downloadPubChem(String start, String end) {
         String scriptPath = "testcases/downloadPubChem.py";
         List<String> filenames = new ArrayList<>();
@@ -165,7 +173,7 @@ public class MoleculeDatabase {
             e.printStackTrace();
         }
     }
-    
+
 
     /**
      * Save database to file system
