@@ -72,6 +72,17 @@ public class Main {
                     for(Molecule m: mList)
                         System.out.println(m.moleculeName);
                 break;
+            case "--downloadPubChem":
+                // Repurposed moleculePath should be in format "start,end"
+                String[] indexes = moleculePath.split(",");
+                if (indexes.length == 2) {
+                    String start = indexes[0];
+                    String end = indexes[1];
+                    moleculeDb.downloadPubChem(start, end);
+                } else {
+                    printVerbose("invalid Input");
+                }
+                break;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;
