@@ -17,6 +17,8 @@ public class MoleculeDatabase {
 
     public boolean verbose = false;
 
+    String name;
+
     public void printVerbose(String s) {
         if (verbose) {
             System.out.println(s);
