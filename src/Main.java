@@ -4,11 +4,16 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class Main {
 
     static MoleculeDatabase moleculeDb = null;
     static boolean verbose = false;
+    static int MINUTE = 60 * 1000;
+
+    public static ProteinFactory proteinFactory = ProteinFactory.getInstance();
 
     public static void initDb(String dbName) throws IOException {
         // Load the database
@@ -17,6 +22,7 @@ public class Main {
         if (dbFile.exists()) {
             moleculeDb.load(dbName);
         }
+        moleculeDb.name = dbName;
     }
 
     public static void printVerbose(String s) {
@@ -25,9 +31,10 @@ public class Main {
         }
     }
 
-    public static void commandHandler1(String cmd) {
+    public static void commandHandler1(String cmd) throws IOException {
         switch (cmd) {
             case "--printDb":
+                System.out.println(moleculeDb.name);
                 moleculeDb.printDb();
                 break;
             case "--verbose":
@@ -39,16 +46,45 @@ public class Main {
                 verbose = !verbose;
                 moleculeDb.verbose = verbose;
                 break;
+            case "--manySimple":
+                ProteinFactory.manySimpleProteins();
+                break;
+            case "--fewComplex":
+                ProteinFactory.fewComplexProteins();
+                break;
+            case "--marco":
+                System.out.println("polo");
+                break;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;
         }
     }
 
-    public static void commandHandler2(String cmd, String moleculePath) {
+    public static void addProteins(String proteinPath) throws IOException {
+        Files.walkFileTree(Paths.get(proteinPath), new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (!Files.isDirectory(file)) {
+                    moleculeDb.addMolecule(new Molecule(proteinPath + "/" +
+                            file.getParent().toString() + "/" + file.getFileName().toString()));
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public static void commandHandler2(String cmd, String moleculePath) throws IOException {
         switch (cmd) {
             case "--addMolecule":
                 moleculeDb.addMolecule(new Molecule(moleculePath));
+                break;
+            case "--addProteins":
+                try {
+                    addProteins(moleculePath);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
                 break;
             case "--findMolecule":
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
@@ -153,7 +189,7 @@ public class Main {
         } catch (ConnectException e) {
             // If a client connection fails, run the server side of the program
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-            serverSocket.setSoTimeout(60 * 1000);
+            serverSocket.setSoTimeout(10 * MINUTE);
 
             // Set the default filename for the database
             String dbName = "molecule.db";
