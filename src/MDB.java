@@ -2,14 +2,11 @@ import edu.bu.ec504.project.Atom;
 import edu.bu.ec504.project.Molecule;
 
 import javax.swing.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * A class represents the molecule database that works with the GUI.
@@ -161,6 +158,41 @@ public class MDB {
         return returnList;
     }
 
+    /**
+     * Download Molecules from Pubchem in range [start, end]
+     */
+    public void downloadPubChem(String start, String end) {
+        String scriptPath = "testcases/downloadPubChem.py";
+        List<String> filenames = new ArrayList<>();
+
+        try {
+            // build Python script call
+            ProcessBuilder builder = new ProcessBuilder("python", scriptPath, start, end);
+            Process process = builder.start();
+
+            // get Python filename output
+            InputStream stdout = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stdout));
+
+            String file;
+            while ((file = reader.readLine()) != null) {
+                outputTextArea.append("file created: " + file + "\n\n");
+                filenames.add(file);
+            }
+
+            int exitCode = process.waitFor();
+            outputTextArea.append("Exited with code: " + exitCode + "\n\n");
+
+            // add created files to the database
+            for (String filename : filenames) {
+                this.addMolecule(new Molecule(filename));
+            }
+
+        } catch (Exception e) {
+            outputTextArea.append("Error downloading from PubChem" + "\n\n");
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Save database to file system
