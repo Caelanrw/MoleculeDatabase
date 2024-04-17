@@ -74,10 +74,17 @@ public class MDB {
      */
     public void addMolecule(Molecule molecule) {
         if (molecule == null) {
-            outputTextArea.append("molecule == null\n");
+            outputTextArea.append("molecule == null" + "\n\n");
             return;
         }
         int numAtoms = molecule.getNumAtoms();
+        //test if molecule has an unconnected atom
+        for(Atom a: molecule.getAtomArrayList())
+            if(a.connected.isEmpty()) {
+                outputTextArea.append("Error: molecule file is incorrect (contains unconnected atom)" + "\n\n");
+                return;
+            }
+
         if (this.db.containsKey(numAtoms)) {
             this.db.get(numAtoms).add(molecule);
         } else {
