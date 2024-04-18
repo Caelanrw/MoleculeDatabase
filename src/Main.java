@@ -14,8 +14,6 @@ public class Main {
     static boolean verbose = false;
     static int MINUTE = 60 * 1000;
 
-    public static ProteinFactory proteinFactory = ProteinFactory.getInstance();
-
     public static void initDb(String dbName) throws IOException {
         // Load the database
         moleculeDb = new MoleculeDatabase();
@@ -24,6 +22,7 @@ public class Main {
             moleculeDb.load(dbName);
         }
         moleculeDb.name = dbName;
+        ProteinFactory.initAminoAcids();
     }
 
     public static void printVerbose(String s) {
@@ -49,10 +48,10 @@ public class Main {
                 verbose = !verbose;
                 moleculeDb.verbose = verbose;
                 break;
-            case "--manySimple":
+            case "--makeManySimple":
                 ProteinFactory.manySimpleProteins();
                 break;
-            case "--fewComplex":
+            case "--makeFewComplex":
                 ProteinFactory.fewComplexProteins();
                 break;
             case "--marco":
