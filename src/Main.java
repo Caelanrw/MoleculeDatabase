@@ -104,7 +104,7 @@ public class Main {
             case "--findSubgraph":
                 ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
                 if (mList.isEmpty())
-                    System.out.println("No subraphs found");
+                    System.out.println("No subgraphs found");
                 else
                     for(Molecule m: mList)
                         System.out.println(m.moleculeName);
