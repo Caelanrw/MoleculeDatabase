@@ -3,26 +3,7 @@ import java.util.ArrayList;
 
 public class ProteinFactory {
 
-    private static ProteinFactory INSTANCE;
-
-    private ProteinFactory() {
-        ALANINE.symbol1 = "A";
-        CYSTEINE.symbol1 = "C";
-        GLYCINE.symbol1 = "G";
-        ISOLEUCINE.symbol1 = "I";
-        LEUCINE.symbol1 = "L";
-        METHIONINE.symbol1 = "M";
-        PROLINE.symbol1 = "P";
-        SERINE.symbol1 = "S";
-        THREONINE.symbol1 = "T";
-        VALINE.symbol1 = "V";
-    }
-
-    public static ProteinFactory getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ProteinFactory();
-        }
-        return INSTANCE;
+    public ProteinFactory() {
     }
 
     static final AminoAcid ALANINE;
@@ -61,6 +42,19 @@ public class ProteinFactory {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static public void initAminoAcids() {
+        ALANINE.symbol1 = "A";
+        CYSTEINE.symbol1 = "C";
+        GLYCINE.symbol1 = "G";
+        ISOLEUCINE.symbol1 = "I";
+        LEUCINE.symbol1 = "L";
+        METHIONINE.symbol1 = "M";
+        PROLINE.symbol1 = "P";
+        SERINE.symbol1 = "S";
+        THREONINE.symbol1 = "T";
+        VALINE.symbol1 = "V";
     }
 
     static final int AMINO_ACID_COUNT = 10;
@@ -153,14 +147,6 @@ public class ProteinFactory {
             newTerminusC -= (newTerminusC > terminusHO) ? 1 : 0;
             newTerminusC -= (newTerminusC > terminusO) ? 1 : 0;
             terminusC = newTerminusC;
-        }
-
-        public void print() {
-            System.out.println(atomCount);
-            System.out.println(atomBuffer);
-            System.out.println(bondList);
-            System.out.println(terminusC);
-            System.out.println(complete);
         }
 
         public void write(String folderName) throws IOException {
@@ -281,13 +267,16 @@ public class ProteinFactory {
         for (int ii = 0; ii < 100; ii++) {
             System.out.println(ii + "% done generating simple proteins (< 137 atoms)");
             File simpleDirNested = new File(simpleDir, "simple" + ii);
-            simpleDirNested.mkdirs();
+            if (simpleDirNested.mkdirs()) {
+                System.out.println("made new directory: " + simpleDirNested);
+            }
             for (int jj = 0; jj < 100000; jj++) {
                 Protein protein = generateProtein(simpleIdx, 7);
                 protein.write(simpleDirNested.toString());
                 simpleIdx++;
             }
         }
+        System.out.println("done");
     }
 
     public static void fewComplexProteins() throws IOException {
@@ -296,7 +285,9 @@ public class ProteinFactory {
         for (int ii = 0; ii < 10; ii++) {
             System.out.println(ii + "0% done generating complex proteins (>= 10006 atoms)");
             File complexDirNested = new File(complexDir, "complex" + ii);
-            complexDirNested.mkdirs();
+            if (complexDirNested.mkdirs()) {
+                System.out.println("made new directory: " + complexDirNested);
+            }
             for (int jj = 0; jj < 1000; jj++) {
                 Protein protein = generateProtein(complexIdx, 1429);
                 protein.name = "protein" + complexIdx;
@@ -304,6 +295,7 @@ public class ProteinFactory {
                 complexIdx++;
             }
         }
+        System.out.println("done");
     }
 
     public static void main(String[] args) throws IOException {
