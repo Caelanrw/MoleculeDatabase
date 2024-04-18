@@ -42,9 +42,9 @@ def scrambleLabels(graph):
     scrambled_graph = nx.relabel_nodes(graph, new_map)
     return scrambled_graph
 
-def writeMolecule(mol_name, smiles):
+def writeMolecule(mol_name, smiles, folder_name="molecules"):
     mol_with_H = read_smiles(smiles, explicit_hydrogen=True)
-    file_path_mol = "./molecules/" + mol_name + ".txt"
+    file_path_mol = "./" + folder_name + "/" + mol_name + ".txt"
     
     nx.write_edgelist(mol_with_H, file_path_mol)
     
@@ -71,9 +71,9 @@ def writeMolecule(mol_name, smiles):
     
     return 0
 
-def writeIsomorphic(mol_name, smiles):
+def writeIsomorphic(mol_name, smiles, folder_name="isomorphic_test"):
     iso_graph = scrambleLabels(read_smiles(smiles, explicit_hydrogen=True))
-    file_path_iso = "./isomorphic_test/" + mol_name + "_iso.txt"
+    file_path_iso = "./" + folder_name + "/" + mol_name + "_iso.txt"
     
     nx.write_edgelist(iso_graph, file_path_iso)
     
@@ -97,8 +97,8 @@ def writeIsomorphic(mol_name, smiles):
     return 0
 
 if __name__ == "__main__":
-    START_CIN = 24524
-    STOP_CIN = 30000
+    START_CIN = 40000
+    STOP_CIN = 41000
     INCREMENT = 100
     # HH = 783
     # H2 = 24523
