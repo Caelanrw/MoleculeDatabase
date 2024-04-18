@@ -282,7 +282,7 @@ Link to all data necessary for project to run (drive link or repo link): None
 Link to a folder containing all testing code utilized to observe the correctness of your code: None
 
 # Work Breakdown
-Hyunsoo Kim implemented the Main.java, the MoleculeDatabase.java, and the ProteinFactory.java. Hyunsoo helped discover useful PubChem APIs and put together testing and benchmarking suite. Also contributed to the README.md file. 
+Hyunsoo Kim implemented the Main.java, the MoleculeDatabase.java, and the ProteinFactory.java. Hyunsoo helped discover useful PubChem APIs and put together testing and benchmarking suite, and also contributed to the README.md file. 
 
 Caelan Wong implemented the mostSimilar() method in Molecule.java and MoleculeDatabase.java to run whenever findMolecule() returns null. Also, Caelan helped with the early implementation of the addMolecule() method and created the PeriodicTable.java enum. Lastly, Caelan helped with the README.md.
 
