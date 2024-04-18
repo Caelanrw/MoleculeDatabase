@@ -20,6 +20,7 @@ public class Main {
                 }
             }
         }
+        System.out.println(moleculeArrayList.size());
         Molecule tester = new Molecule(filename);
 
         Molecule res=null;
