@@ -16,6 +16,8 @@ public class MoleculeDatabase {
 
     public boolean verbose = false;
 
+    String name;
+
     public void printVerbose(String s) {
         if (verbose) {
             System.out.println(s);
@@ -115,28 +117,6 @@ public class MoleculeDatabase {
         }
 
         return similar;
-    }
-
-    /**
-     * Find all molecules that contain the @param subgraph
-     * @param molecule subgraph
-     * @return List of molecules that contain subgraph
-     */
-    public ArrayList<Molecule> findSubgraph(Molecule molecule) {
-        ArrayList<Molecule> returnList = new ArrayList<Molecule>();
-        int startingNumber = molecule.getNumAtoms();
-        for(int ii : db.keySet()) {
-            if (ii >= startingNumber) {
-                for(Molecule m: db.get(ii)) {
-                    if(m.isSubGraphPresent(molecule) != null) {
-                        returnList.add(m);
-                        System.out.println(m.moleculeName);
-                    }
-                }
-            }
-        }
-
-        return returnList;
     }
 
     /**
