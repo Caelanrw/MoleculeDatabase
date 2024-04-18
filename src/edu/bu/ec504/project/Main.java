@@ -15,13 +15,30 @@ public class Main {
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
-                        for(int oo = 0;oo <1000;oo++)
-                            moleculeArrayList.add(new Molecule(file.getPath()));
+                        moleculeArrayList.add(new Molecule(file.getPath()));
                     }
                 }
             }
         }
+        System.out.println(moleculeArrayList.size());
         Molecule tester = new Molecule(filename);
+
+        Molecule res=null;
+        int similar=0;
+        for(Molecule mol: moleculeArrayList)
+        {
+            int temp=mol.mostSimilar(moleculeArrayList.get(2));
+
+            System.out.println(mol.moleculeName+" has "+ temp + " points");
+            if(temp>similar)
+            {
+                similar=temp;
+                res=mol;
+            }
+        }
+        System.out.println("Most similar is "+ res.moleculeName);
+
+
         for(Molecule f: moleculeArrayList) {
             Molecule testing = new Molecule(filename);
             if (moleculeArrayList.get(0).areMoleculesEqual(testing) == null) {
