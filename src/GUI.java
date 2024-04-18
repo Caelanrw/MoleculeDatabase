@@ -151,7 +151,7 @@ public class GUI extends JFrame {
                 String moleculePath = filePathField.getText();
                 ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
                 if (mList.isEmpty())
-                    outputTextArea.append("No subraphs found" + "\n\n");
+                    outputTextArea.append("No subgraphs found" + "\n\n");
                 else
                     for (Molecule m : mList)
                         outputTextArea.append("Subgraph found: " + m.moleculeName + "\n\n");
