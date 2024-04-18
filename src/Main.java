@@ -217,7 +217,7 @@ public class Main {
         } catch (ConnectException e) {
             // If a client connection fails, run the server side of the program
             ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
-            serverSocket.setSoTimeout(10 * MINUTE);
+            serverSocket.setSoTimeout(5 * MINUTE);
 
             // Set the default filename for the database
             String dbName = "molecule.db";
