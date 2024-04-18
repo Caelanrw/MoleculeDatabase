@@ -28,16 +28,6 @@ public class Main {
                 System.out.println(m.moleculeName);
             }
         }
-
-        /*
-        for(Molecule f: moleculeArrayList) {
-            Molecule testing = new Molecule(filename);
-            if (moleculeArrayList.get(0).isSubGraphPresent(testing) != null) {
-                System.out.println("subfound");
-            }
-        }
-
-         */
     }
 
 }

@@ -125,6 +125,11 @@ public class Molecule implements Serializable {
         return this;
     }
 
+    /**
+     * Returns the molecule if it contains subgraph
+     * @param subgraph
+     * @return
+     */
     public Molecule isSubGraphPresent(Molecule subgraph) {
         //compare the number of elements
         for (int ii = 0; ii < numElements.length; ii++)
@@ -172,36 +177,30 @@ public class Molecule implements Serializable {
                 }
             }
         }
-        //if it matches the type (elem and connections) as one in the subgraph, add it to candidate list for subgrpah
-
         //Look through list of candidates, and if any of the lists are empty return null
         for (Atom sweep : subgraph.atomArrayList)
             if (!CandidateList.containsKey(sweep))
                 return null;
 
-
-        //Unmark all atoms (marked = visited)
+        //Un mark all atoms (marked = visited)
         for (Atom cleanAtom : this.atomArrayList)
             cleanAtom.marked = false;
         for (Atom cleanAtom : subgraph.atomArrayList)
             cleanAtom.marked = false;
 
-        //BFS node: parent atom, other candidates
         //Make a linked list of the BFS node
         LinkedList<subGraphNode> subgraphTraversal = new LinkedList<subGraphNode>();
         //head is the first atom (parent is null)
         subgraphTraversal.addFirst(new subGraphNode(null, subgraph.atomArrayList.get(0)));
         for (Atom c : CandidateList.get(subgraph.atomArrayList.get(0))) {
-           //c.marked = true;
            subgraphTraversal.get(0).options.add(c);
         }
         subgraphTraversal.getFirst().self.marked = true;
         int pointer = 0;
         while(true) {
             subGraphNode current = subgraphTraversal.get(pointer);
-
             if(current.options.isEmpty()) {
-                //If there are no options to choose from, move pointer backwards (to parent) and restart cycke
+                //If there are no options to choose from, move pointer backwards (to parent) and restart cycle
                 //if parent is null return null
                 if(current.parent == null)
                     return null;
@@ -251,26 +250,7 @@ public class Molecule implements Serializable {
                     pointer++;
                 }
             }
-
-
-
-
-
-
-
-            //if one of the adjacent have no options, reverse all the work done
-            //if succeeded, move pointer forward on queue
-
-
-            //take where ever we're at
-            //look for each unmarked neighbor
-            //
         }
-        //for adjacent nodes, add one possibiltiy to the linked list, marking the other possbile candidates.
-        //if no candidates to pick from, undo markings and go to parent, choosing and freeing another one of its candidates
-        //if no other candidate from parent repeat process until parent is nul (return null) or another candidate is chosen.
-        //after all unvisted nodes are added, iterate through list
-        //if gets to end of list, then it is a subgraph
     }
 
     /**
