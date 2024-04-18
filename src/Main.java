@@ -34,8 +34,10 @@ public class Main {
     public static void commandHandler1(String cmd) throws IOException {
         switch (cmd) {
             case "--printDb":
-                System.out.println(moleculeDb.name);
                 moleculeDb.printDb();
+                break;
+            case "--printName":
+                System.out.println(moleculeDb.name);
                 break;
             case "--verbose":
                 if (verbose) {
