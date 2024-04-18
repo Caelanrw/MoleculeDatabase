@@ -349,6 +349,134 @@ public class Molecule implements Serializable {
     
 
     /**
+     * Returns the molecule if it contains subgraph
+     * @param subgraph
+     * @return
+     */
+    public Molecule isSubGraphPresent(Molecule subgraph) {
+        //compare the number of elements
+        for (int ii = 0; ii < numElements.length; ii++)
+            if (this.numElements[ii] < subgraph.numElements[ii])
+                return null;
+
+        // Compare # of edges
+        if (this.numEdges < subgraph.numEdges)
+            return null;
+
+        //Hashmap of candidates
+        HashMap<Atom, ArrayList<Atom>> CandidateList = new HashMap<>();
+
+        //For each atom in the array list
+        for (Atom possibleCandidate : this.atomArrayList) {
+            Object[] cndArray = possibleCandidate.connected.values().toArray();
+            for (Atom keyAtom : subgraph.atomArrayList) {
+                if (!keyAtom.equals(possibleCandidate)) {
+                    if (keyAtom.elementType == possibleCandidate.elementType) {
+                        if (keyAtom.degree <= possibleCandidate.degree) {
+                            boolean validConnects = true;
+                            boolean[] edgeMarked = new boolean[possibleCandidate.connected.size()];
+                            for (Atom.ElemOrderPair keyValue : keyAtom.connected.values()) {
+                                boolean edgeFound = false;
+                                for (int aa = 0; aa < edgeMarked.length; aa++) {
+                                    if (!edgeMarked[aa] && keyValue.eType == ((Atom.ElemOrderPair) cndArray[aa]).eType && keyValue.bondOrder == ((Atom.ElemOrderPair) cndArray[aa]).bondOrder) {
+                                        edgeMarked[aa] = true;
+                                        edgeFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!edgeFound) {
+                                    validConnects = false;
+                                }
+                            }
+                            if (validConnects) {
+                                //add atom to list
+                                if (!CandidateList.containsKey(keyAtom)) {
+                                    CandidateList.put(keyAtom, new ArrayList<>());
+                                }
+                                CandidateList.get(keyAtom).add(possibleCandidate);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //Look through list of candidates, and if any of the lists are empty return null
+        for (Atom sweep : subgraph.atomArrayList)
+            if (!CandidateList.containsKey(sweep))
+                return null;
+
+        //Un mark all atoms (marked = visited)
+        for (Atom cleanAtom : this.atomArrayList)
+            cleanAtom.marked = false;
+        for (Atom cleanAtom : subgraph.atomArrayList)
+            cleanAtom.marked = false;
+
+        //Make a linked list of the BFS node
+        LinkedList<subGraphNode> subgraphTraversal = new LinkedList<subGraphNode>();
+        //head is the first atom (parent is null)
+        subgraphTraversal.addFirst(new subGraphNode(null, subgraph.atomArrayList.get(0)));
+        for (Atom c : CandidateList.get(subgraph.atomArrayList.get(0))) {
+           subgraphTraversal.get(0).options.add(c);
+        }
+        subgraphTraversal.getFirst().self.marked = true;
+        int pointer = 0;
+        while(true) {
+            subGraphNode current = subgraphTraversal.get(pointer);
+            if(current.options.isEmpty()) {
+                //If there are no options to choose from, move pointer backwards (to parent) and restart cycle
+                //if parent is null return null
+                if(current.parent == null)
+                    return null;
+                else
+                    pointer = subgraphTraversal.indexOf(current.parent);
+            }
+            else {
+                boolean mustReverse = false;
+                int adjAdded = 0;
+                //remove option (choose it)
+                Atom path = current.options.remove(0);
+                path.marked = true;
+                //else add adjacent local nodes
+                for(String k :current.self.connected.keySet()) {
+                    for(Atom a: subgraph.atomArrayList) {
+                        if(!a.marked && a.getName().equals(k)) {
+                            a.marked = true;
+                            subgraphTraversal.add(new subGraphNode(current,a));
+                            adjAdded++;
+                            //add options to adjacent (checking validity:not marked and connected to parent)
+                            ArrayList<Atom> aList = CandidateList.get(a);
+                            boolean candFound = false;
+                            for(Atom cand: aList) {
+                                if(!cand.marked) { //not marked
+                                    if(cand.connected.containsKey(path.getName())) {  //is connected
+                                        subgraphTraversal.getLast().options.add(cand);
+                                        candFound = true;
+                                    }
+                                }
+                            }
+                            if(!candFound)
+                                mustReverse = true;
+                            break;
+                        }
+                    }
+                }
+                if(mustReverse) {
+                    path.marked = false;
+                    for(int ff = 0; ff < adjAdded;ff++) {
+                        subgraphTraversal.getLast().self.marked = false;
+                        subgraphTraversal.remove(subgraphTraversal.getLast());
+                    }
+                }
+                else{
+                    if(subgraphTraversal.getLast().equals(subgraphTraversal.get(pointer)))
+                        return this;
+                    pointer++;
+                }
+            }
+        }
+    }
+
+    /**
      * Return number of atoms of the molecule
      */
     public int getNumAtoms() {

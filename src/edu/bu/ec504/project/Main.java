@@ -21,11 +21,11 @@ public class Main {
                 }
             }
         }
+        System.out.println(moleculeArrayList.size());
         Molecule tester = new Molecule(filename);
-        for(Molecule f: moleculeArrayList) {
-            Molecule testing = new Molecule(filename);
-            if (moleculeArrayList.get(0).areMoleculesEqual(testing) == null) {
-                System.out.println("err");
+        for(Molecule m: moleculeArrayList) {
+            if(m.isSubGraphPresent(tester) != null) {
+                System.out.println(m.moleculeName);
             }
         }
     }
