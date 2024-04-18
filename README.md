@@ -2,7 +2,7 @@
 
 
 
-Documentation
+#Documentation
 Description: A database of molecules that are entered in the format: 
 [MOLECULE NAME]
 [# OF VERTICES]
