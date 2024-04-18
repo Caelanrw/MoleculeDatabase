@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -53,9 +54,35 @@ public class Main {
             case "--findMolecule":
                 Molecule molecule = moleculeDb.findMolecule(new Molecule(moleculePath));
                 if (molecule == null) {
-                    System.out.println("NOT FOUND");
+                    System.out.println("NO EXACT MATCH FOUND");
+                    molecule= moleculeDb.similarMolecule(new Molecule(moleculePath));
+                    if(molecule!=null)
+                    {
+                        System.out.println(molecule.moleculeName + " is the most similar");
+                    }
                 } else {
                     printVerbose("FOUND");
+                }
+                break;
+            case "--findSubgraph":
+                ArrayList<Molecule> mList = moleculeDb.findSubgraph(new Molecule(moleculePath));
+                if (mList.isEmpty())
+                    System.out.println("No subraphs found");
+                else
+                    for(Molecule m: mList)
+                        System.out.println(m.moleculeName);
+                break;
+            case "--downloadPubChem":
+                // Repurposed moleculePath should be in format "start,end"
+                // Input format for the file path is "start,end" where 'start' and 'end' are the starting and ending CID indices of molecules in PubChem
+                // For example, enter 12,24 to download molecules 12-24
+                String[] indexes = moleculePath.split(",");
+                if (indexes.length == 2) {
+                    String start = indexes[0];
+                    String end = indexes[1];
+                    moleculeDb.downloadPubChem(start, end);
+                } else {
+                    printVerbose("invalid Input");
                 }
                 break;
             default:
