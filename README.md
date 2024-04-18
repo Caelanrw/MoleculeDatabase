@@ -140,15 +140,11 @@ To execute the program via the command-line interface, navigate to the directory
 
 ./md --printName: This command prints the name of the database.
 
-./md --verbose: Upon entering this command, all subsequent commands will display additional information about the database (e.g., error messages). If the user runs this command again, subsequent commands will not output additional information.
-
 ./md --makeManySimple: This command generates 10 million molecule files with between 52 and 136 atoms.
 
 ./md --makeFewComplex: This command generates 10,000 million molecule files with over 10,000 atoms each.
 
 ./md --marco: This command pings the server to check if it is still alive.
-
-./md --quit: This command saves the database and exits the program.
 
 The Main.java class, which facilitates the command-line interface, also includes a client-server connection feature. When the program is executed, it first attempts to determine whether it can function as a client or server and establishes connections accordingly.
 
