@@ -88,6 +88,7 @@ Since isomorphic molecules are equivalent to each other, we must test for isomor
 
 # Implemented features
 
+
 **Can hold 10,000 molecules**
 
 **Percentage:** Minimum Requirement
@@ -98,6 +99,8 @@ As detailed in the Project Implementation section, our molecule database is buil
 public HashMap<Integer, ArrayList<Molecule>> db
 In this structure, each integer key corresponds to an ArrayList containing molecules with the same number of atoms. This structure allows our database to efficiently manage up to 10,000 molecules if needed.
 
+
+
 **Efficiently searches for a molecule up to graph isomorphism**
 
 **Percentage:** Minimum Requirement
@@ -107,6 +110,8 @@ In this structure, each integer key corresponds to an ArrayList containing molec
 Our database utilizes an array-based organization where each index corresponds to the number of atoms in a molecule. The array is structured so molecules with the same number of atoms are grouped together.  We were able to take advantage of this when searching for a molecule. We begin by examining the number of atoms we are searching for in the molecule. If no molecules are stored at the corresponding index in the database, we immediately know that the molecule is not present. If molecules are stored in this index, we only have to focus on these.
 
 Next, we can analyze the specific characteristics of both the target molecule and each molecule sharing the same count of atoms. We use the function areMoleculesEqual() to compare the molecule we are searching for with the other molecules individually. Each molecule has an array, numElements, of size 118, where each index corresponds to an atomic number of an element. Within this array, each index holds a count representing the number of occurrences of each element in the molecule. We compare the numElements arrays of both molecules, and we can determine if they are not the same and if there are any inconsistencies. Afterward, we verify that each molecule's total number of edges matches. Following this comparison, we proceed with a deeper examination of each atom in both molecules. For every atom in the first molecule, we ensure a corresponding atom exists in the second molecule. We compare the atoms by looking at their atomic number, degree of edges, and bonds. We ensure that each bond of the atom is exactly the same as the bonds of the atom in the second molecule. If, at any point, inconsistencies between the two molecules arise, we conclude that the molecules are not identical. The function will only return that a molecule has been found in the database if it satisfies all the tests.
+
+
 
 
 **Command-line User Interface**
@@ -148,6 +153,8 @@ To execute the program via the command-line interface, navigate to the directory
 The Main.java class, which facilitates the command-line interface, also includes a client-server connection feature. When the program is executed, it first attempts to determine whether it can function as a client or server and establishes connections accordingly.
 
 
+
+
 **Stand-alone GUI**
 
 **Percentage:** 15%
@@ -172,6 +179,9 @@ Database Statistics: Clicking this option prints database statistics, including 
 
 When the GUI is closed, the program automatically saves the working database as molecule.db in the same project folder. Upon reopening, the database loads automatically, and a message confirming successful loading is displayed.
 
+
+
+
 **Downloads known compounds from an existing database (1,000)**
 
 **Percentage:** 15%
@@ -183,6 +193,9 @@ The PubChem database is supported by a Power User Getaway (PUG) REST-style API, 
 The script parses the JSON response for the compound’s CID, Title, and SMILES and generates valid molecule inputs for the database. PySMILES provides a helper function, read_smiles, which generates a NetworkX graph object of the molecule. Then, NetworkX is used to write an edge list for the graph, and metadata such as the Title of the compound, the number of atoms, and the atom names are placed in front of the edge list. This constitutes a valid molecule input format for our database, which is then saved as a *.txt file with the name [“molecule” + CID + “.txt”]. When interpreting SMILES Strings, any SMILES containing non-integer bond values (e.g., 1.5) will be ignored. Additionally, any PubChem CIDs without a Title index will also be ignored.
 
 Two scripts are provided for generating input files, one that is meant to be called by the Main.java class (downloadPubChem.py) and one that is interactable through a CLI (molecule_input.py). The Main.java class provides a range of CIDs that are automatically inserted into the database with the command --downloadPubChem start,end. When utilizing the user-intended command-line interface, several other functions are also provided, such as generating input files based on a user-provided SMILES String and generating isomorphic test files to test the --findMolecule command. The user is prompted to input what functions they would like to use, and the generated molecule input files are created in their respective folders. 
+
+
+
 
 **Implementation handles core operations on over 10 million molecules at a rate of 10 ops/sec**
 
@@ -200,6 +213,9 @@ The feature is not complete at the current time because the database and molecul
 
 Dividing the database into multiple partitions is a solution in plan. They will be accompanied by a file with bloom filters, one for each partition. Before a partition is loaded, its bloom filter will be tested to rule out partitions that cannot contain the molecule. A canonicalization algorithm may be necessary to enforce a unique representation of isomorphic molecules. On the other hand, having multiple separate databases will be friendly to parallelization.
 
+
+
+
 **Handles core operations on 10,000 complex molecules, each with over 10,000 atoms (rate of 10 ops/sec)**
 
 **Percentage:** 30%
@@ -213,6 +229,9 @@ Because saving 10,000 protein files with over 10,000 atoms each in a single dire
 The feature is not complete at the current time, because the data structures of the database and the molecules are too memory intensive. Adding 10,000 molecules with 10,000 atoms each to the database simply did not succeed before the Java software crashed from an OutOfMemory error.
 
 Dividing the database into multiple partitions is a solution in plan. They will be accompanied by a file with bloom filters, one for each partition. Before a partition is loaded, its bloom filter will be tested to rule out partitions that cannot contain the molecule. Some kind of canonicalization algorithm may be necessary to enforce a unique representation of isomorphic molecules. On the other hand, having multiple separate databases will be friendly to parallelization.
+
+
+
 
 **Searches for the most similar molecule to a given molecule if no exact match exists.**
 
@@ -229,6 +248,9 @@ Subsequently, points will be added if the molecules have the same number of atom
 Each edge originating from each atom in the first molecule is compared to each edge in the second molecule. If the method finds an edge that exactly matches the edge in the second molecule, then a point is added, the edge is marked as counted for, and the associated atom is marked as seen. The edges are considered identical if the elements involved and the degree of the edge (e.g., single bond, double bond, triple bond) are the same.
 
 Given that our molecule database is organized as an array where each index i holds the molecules that have i atoms in them, we opted to compute the similarity score only for molecules with a number of atoms within 100 of the molecule we are searching for. This decision stems from the anticipation that molecules with a significantly larger or smaller number of atoms will exhibit substantial differences. By limiting the number scope of molecules considered for similarity scoring, we optimize efficiency when there is a wide variance in the number of atoms among the molecules in our database.
+
+
+
 
 **Subgraph search (finds all molecules that contain the provided subgraph)**
 
