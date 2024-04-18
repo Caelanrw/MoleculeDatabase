@@ -4,13 +4,23 @@
 
 **Documentation**
 
-Description: A database of molecules that are entered in the format: 
+
+Description: 
+
+A database of molecules that are entered in the format: 
+
 [MOLECULE NAME]
+
 [# OF VERTICES]
+
 [LABEL OF VERTEX ID 0]
+
 [LABEL OF VERTEX ID 1]
+
 [LABEL OF VERTEX ID 2]
+
 ...
+
 [LABEL OF VERTEX ID V]
 
 
@@ -24,34 +34,60 @@ Here is an example molecule1.txt:
 
 
 ethanol
+
 9
+
 C
+
 C
+
 O
+
 H
+
 H
+
 H
+
 H
+
 H
+
 H
+
 0 1
+
 0 3
+
 0 4
+
 0 5
+
 1 2
+
 1 6
+
 1 7
+
 2 8
-Group 4
-Group members: 
+
+**Group 4**
+
+**Group members:** 
 Hyunsoo Kim, Caelan Wong, Phuong Khanh Tran, Tristen Liu, Jason Calalang
-Project Implementation:
+
+
+**Project Implementation:**
+
 We decided to design the back end of the database storage with the main structure of a large HashMap, with an integer key and ArrayList of molecules as the value. Each key belongs to an array list containing all molecules with the same number of atoms. This feature simplifies future heuristics and is easily quantifiable from the input text file. The Molecule class itself contains its name, the number of atoms, the number of edges, and the count of each element. The count of each element is an array of integers where the index represents the atomic number, and the value is the count. For example, a molecule consisting of only 3 carbons and 2 hydrogen atoms would be represented with values 3 at index 6 and 2 at index 1. The rest of the array would be 0. 
 
 
 The Molecule class would also have an array list of the Atom class. Each atom has its own unique name for identification, its atomic number, its degree, and a HashMap of all the atoms it is connected to. To represent connections, the key to the HashMap is the name of the connected atoms, and the value is a pair made of an atomic number and bond order. Bond order simply notes how many edges are between two specific atoms. Molecules are treated as undirected, so any two connected atoms will have an edge pair listed twice, once in each atom’s connected list. We keep track of specific features, like degree and element count, to aid comparison when specific molecules are queried. 
 Since isomorphic molecules are equivalent to each other, we must test for isomorphism in each molecule. To save time on testing isomorphism for each molecule, we simply do not consider molecules with more or fewer atoms and those with different types of atoms and the number of edges. However, if these heuristics are all equal, we must perform an expensive test to see if the two molecules are isomorphic.
-Implemented features
+
+
+**Implemented features**
+
 Can hold 10,000 molecules 
 Percentage: Minimum Requirement
 How it was implemented:
@@ -75,6 +111,12 @@ To execute the program via the command-line interface, navigate to the directory
 ./md --printDb: This command prints the list of molecules inside the database and their number of atoms.
 ./md --verbose: Upon entering this command, all subsequent commands will display additional information about the database. If the user runs this command again, subsequent commands will not output additional information.
 ./md --quit: This command exits the program. Upon exiting, the molecule database is automatically saved in the project folder as molecule.db, and a confirmation message is displayed in the command interface. When the program is relaunched, the database is loaded, allowing the user to resume working with the previously saved data.
+./md --printName: This command prints the name of the database.
+./md --verbose: Upon entering this command, all subsequent commands will display additional information about the database (e.g., error messages). If the user runs this command again, subsequent commands will not output additional information.
+./md --makeManySimple: This command generates 10 million molecule files with between 52 and 136 atoms.
+./md --makeFewComplex: This command generates 10,000 million molecule files with over 10,000 atoms each.
+./md --marco: This command pings the server to check if it is still alive.
+./md --quit: This command saves the database and exits the program.
 The Main.java class, which facilitates the command-line interface, also includes a client-server connection feature. When the program is executed, it first attempts to determine whether it can function as a client or server and establishes connections accordingly.
 Stand-alone GUI
 Percentage: 15%
@@ -143,4 +185,3 @@ Jason Calalang implemented the findSubgraph() method in MoleculeDatabase.java an
 
 
 All members signed this README.md.
-
