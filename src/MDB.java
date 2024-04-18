@@ -1,42 +1,72 @@
 import edu.bu.ec504.project.Atom;
 import edu.bu.ec504.project.Molecule;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 /**
- * A class represents the molecule database
+ * A class represents the molecule database that works with the GUI.
  */
-public class MoleculeDatabase {
+public class MDB {
 
     public HashMap<Integer, ArrayList<Molecule>> db;   // Molecule database
-
-    public boolean verbose = false;
-
-    public void printVerbose(String s) {
-        if (verbose) {
-            System.out.println(s);
-        }
-    }
+    public JTextArea outputTextArea; // Reference to the text area in the GUI
 
     /**
      * Constructs a database
      */
-    public MoleculeDatabase() {
+    public MDB(JTextArea outputTextArea) {
         this.db = new HashMap<>();
+        this.outputTextArea = outputTextArea;
     }
 
+    /**
+     * Print database statistics to GUI
+     */
     public void printDb() {
+        // Print number of molecules
+        int size = 0;
+        for (ArrayList<Molecule> molecules : db.values()) {
+            size += molecules.size();
+        }
+        outputTextArea.append("# of molecules: " + size + "\n\n");
+
+        if (size == 0)
+            return; // if database is empty, exit early
+
+        // Print the list of molecules
+        outputTextArea.append("List of molecules: " + "\n\n");
         for (Integer atomCount : this.db.keySet()) {
-            System.out.println("\n# atoms: " + atomCount.toString());
             ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
             for (Molecule molecule : moleculesWithSameNumAtoms) {
-                System.out.println(molecule.moleculeName);
+                outputTextArea.append("Molecule name: " + molecule.moleculeName + "\n");
+                outputTextArea.append("# of atoms: " + atomCount.toString() + "\n\n");
             }
         }
+
+        // Print the largest and biggest molecules
+        int maxAtoms = Integer.MIN_VALUE;
+        int minAtoms = Integer.MAX_VALUE;
+        Molecule largestMolecule = null;
+        Molecule smallestMolecule = null;
+        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
+            int numAtoms = entry.getKey();
+            if (numAtoms > maxAtoms) {
+                maxAtoms = numAtoms;
+                largestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+            if (numAtoms < minAtoms) {
+                minAtoms = numAtoms;
+                smallestMolecule = entry.getValue().get(0); // only print 1 representative molecule
+            }
+        }
+        outputTextArea.append("Smallest molecule: " + smallestMolecule.moleculeName + "\n");
+        outputTextArea.append("Largest molecule: " + largestMolecule.moleculeName + "\n\n");
+
     }
 
     /**
@@ -44,14 +74,14 @@ public class MoleculeDatabase {
      */
     public void addMolecule(Molecule molecule) {
         if (molecule == null) {
-            printVerbose("molecule == null");
+            outputTextArea.append("molecule == null" + "\n\n");
             return;
         }
         int numAtoms = molecule.getNumAtoms();
         //test if molecule has an unconnected atom
         for(Atom a: molecule.getAtomArrayList())
             if(a.connected.isEmpty()) {
-                printVerbose("Error: molecule file is incorrect (contains unconnected atom)");
+                outputTextArea.append("Error: molecule file is incorrect (contains unconnected atom)" + "\n\n");
                 return;
             }
 
@@ -64,7 +94,6 @@ public class MoleculeDatabase {
         }
     }
 
-
     /**
      * Find isomorphic molecule from the database
      */
@@ -72,14 +101,14 @@ public class MoleculeDatabase {
         // Retrieve the partitioned array list based on the number of atoms
         int numAtoms = molecule.getNumAtoms();
         if (!db.containsKey(numAtoms)) {
-            printVerbose("no ArrayList with correct # of atoms");
+            outputTextArea.append("No ArrayList with correct # of atoms" + "\n\n");
             return null;
         }
         ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
 
         // Iterate through the array list of molecules with the same number of atoms
         for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
-            printVerbose(dbMolecule.moleculeName + " vs " + molecule.moleculeName);
+            outputTextArea.append(dbMolecule.moleculeName + " vs " + molecule.moleculeName + "\n\n");
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 return result; // Return the isomorphic molecule
@@ -87,7 +116,6 @@ public class MoleculeDatabase {
         }
         return null; // Return null if molecule not found
     }
-
 
     /**
      * Find the most similar Molecule from the database
@@ -118,9 +146,7 @@ public class MoleculeDatabase {
     }
 
     /**
-     * Find all molecules that contain the @param subgraph
-     * @param molecule subgraph
-     * @return List of molecules that contain subgraph
+     * Find subgraph
      */
     public ArrayList<Molecule> findSubgraph(Molecule molecule) {
         ArrayList<Molecule> returnList = new ArrayList<Molecule>();
@@ -130,7 +156,7 @@ public class MoleculeDatabase {
                 for(Molecule m: db.get(ii)) {
                     if(m.isSubGraphPresent(molecule) != null) {
                         returnList.add(m);
-                        System.out.println(m.moleculeName);
+                        outputTextArea.append(m.moleculeName + "\n\n");
                     }
                 }
             }
@@ -140,7 +166,7 @@ public class MoleculeDatabase {
     }
 
     /**
-     * Download Molecules from PubChem in range [start, end]
+     * Download Molecules from Pubchem in range [start, end]
      */
     public void downloadPubChem(String start, String end) {
         String scriptPath = "testcases/downloadPubChem.py";
@@ -157,12 +183,12 @@ public class MoleculeDatabase {
 
             String file;
             while ((file = reader.readLine()) != null) {
-                printVerbose("file created: " + file);
+                outputTextArea.append("file created: " + file + "\n\n");
                 filenames.add(file);
             }
 
             int exitCode = process.waitFor();
-            printVerbose("Exited with code: " + exitCode);
+            outputTextArea.append("Exited with code: " + exitCode + "\n\n");
 
             // add created files to the database
             for (String filename : filenames) {
@@ -170,32 +196,11 @@ public class MoleculeDatabase {
             }
 
         } catch (Exception e) {
+            outputTextArea.append("Error downloading from PubChem" + "\n\n");
             e.printStackTrace();
         }
     }
 
-
-    /**
-     * Find all molecules that contain the @param subgraph
-     * @param molecule subgraph
-     * @return List of molecules that contain subgraph
-     */
-    public ArrayList<Molecule> findSubgraph(Molecule molecule) {
-        ArrayList<Molecule> returnList = new ArrayList<Molecule>();
-        int startingNumber = molecule.getNumAtoms();
-        for(int ii : db.keySet()) {
-            if (ii >= startingNumber) {
-                for(Molecule m: db.get(ii)) {
-                    if(m.isSubGraphPresent(molecule) != null) {
-                        returnList.add(m);
-                        System.out.println(m.moleculeName);
-                    }
-                }
-            }
-        }
-
-        return returnList;
-    }
     /**
      * Save database to file system
      */
@@ -215,60 +220,12 @@ public class MoleculeDatabase {
         ObjectInputStream objInStream = new ObjectInputStream(fileInStream);
         try {
             this.db = (HashMap<Integer, ArrayList<Molecule>>) objInStream.readObject();
-            printVerbose("Database loaded successfully.");
+            outputTextArea.append("Database loaded successfully." + "\n\n");
         } catch (IOException | ClassNotFoundException e) {
-            printVerbose("Error loading database: " + e.getMessage());
+            outputTextArea.append("Error loading database: " + e.getMessage() + "\n\n");
         }
         objInStream.close();
         fileInStream.close();
     }
 
-    /**
-     * Get database statistics as a string
-     * Note: this method is designed to work with the webpage
-     */
-    public String showDb() {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        // Print number of molecules
-        int size = 0;
-        for (ArrayList<Molecule> molecules : db.values()) {
-            size += molecules.size();
-        }
-        stringBuilder.append("# of molecules: ").append(size).append("\n\n");
-
-        if (size == 0)
-            return stringBuilder.toString(); // if database is empty, return early
-
-        // Print the list of molecules
-        stringBuilder.append("List of molecules: ").append("\n\n");
-        for (Integer atomCount : this.db.keySet()) {
-            ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
-            for (Molecule molecule : moleculesWithSameNumAtoms) {
-                stringBuilder.append("Molecule name: ").append(molecule.moleculeName).append("\n");
-                stringBuilder.append("# of atoms: ").append(atomCount.toString()).append("\n\n");
-            }
-        }
-
-        // Print the largest and smallest molecules
-        int maxAtoms = Integer.MIN_VALUE;
-        int minAtoms = Integer.MAX_VALUE;
-        Molecule largestMolecule = null;
-        Molecule smallestMolecule = null;
-        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
-            int numAtoms = entry.getKey();
-            if (numAtoms > maxAtoms) {
-                maxAtoms = numAtoms;
-                largestMolecule = entry.getValue().get(0); // only print 1 representative molecule
-            }
-            if (numAtoms < minAtoms) {
-                minAtoms = numAtoms;
-                smallestMolecule = entry.getValue().get(0); // only print 1 representative molecule
-            }
-        }
-        stringBuilder.append("Smallest molecule: ").append(smallestMolecule.moleculeName).append("\n");
-        stringBuilder.append("Largest molecule: ").append(largestMolecule.moleculeName).append("\n\n");
-
-        return stringBuilder.toString();
-    }
 }
