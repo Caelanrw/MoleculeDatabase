@@ -48,15 +48,9 @@ Instruction to run the program on the terminal: To execute the program via the c
 Instruction to run the program using the GUI: To launch the GUI, simply click "Run" on the GUI.java file if using an Integrated Development Environment (IDE) like IntelliJ. Upon initialization, the GUI presents seven buttons for user interaction, accompanied by a sizable output area to display program results. Here are the instructions on how to use each button:
 
 * Choose File: Initiates a window allowing users to select a molecule file for processing. Upon selection, the chosen file's path is displayed in the designated field.
-
 * Add Molecule: This button allows users to add a molecule to the database. 
-
 * Find Molecule: Users can select a molecule file and click this button to search for an isomorphic molecule in the database. 
-
 * Find Subgraph: To find a subgraph, the user selects a file containing the desired subgraph and then clicks on this button to initiate the search for all molecules containing the provided subgraph. 
-
 * Display Molecule: Similarly, users can select a molecule file and click this button to view the molecule's 2D Lewis structure in a separate pop-up window. 
-
 * Download PubChem: Users can specify a range of CID indices (start, end) in the file path to download molecules from the PubChem database. For example, typing 14,16 in the file path and clicking the button download molecules 14-16. 
-
 * Database Statistics: Clicking this option prints database statistics, including the total number of molecules, a list of molecules with their names and the number of atoms, and the names of the smallest and largest molecules in the database. 
