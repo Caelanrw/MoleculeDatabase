@@ -1,6 +1,6 @@
 1. Pre-conditions 
 * The command-line interface is only compatible with Linux (e.g., lab machines) and MacOS systems.
-* Due to the current licensing requirements for the IDEs (e.g., IntelliJ) on lab machines, the GUI cannot be executed on the lab systems. However, it can be run on personal computers under any system.
+* The GUI can be run on the lab machine using the command "source idea-IE.sh" to open IntelliJ and clicking "Run" button on the GUI.java file. If none of the IDEs on the lab machine work for you due to licensing requirements, please try the GUI on your local machine.
 * To use the download molecule capabilities, Python 3.10, 3.11, or 3.12, with the latest version of pip, is required. 
 * In addition, please make sure to update Java 17 on the lab computer by running the following terminal command: source /ad/eng/opt/java/add_jdk17.sh
 
