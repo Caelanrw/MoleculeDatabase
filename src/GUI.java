@@ -7,18 +7,23 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GUI extends JFrame {
     private JTextArea outputTextArea;
-    private JButton chooseFileButton;
+    private JButton chooseButton;
     private JButton addMoleculeButton;
     private JButton findMoleculeButton;
     private JButton statisticsButton;
     private JButton displayMoleculeButton;
     private JButton findSubgraphButton;
     private JButton downloadPubChemButton;
+    private JButton makeSimpleButton;
+    private JButton makeComplexButton;
+    private JButton addProteinsButton;
+    private JButton addMultipleMoleculesButton;
     private JTextField filePathField;
     private static MDB moleculeDb;
     private Socket clientSocket;
@@ -40,49 +45,71 @@ public class GUI extends JFrame {
         outputTextArea.setBackground(Color.BLACK); // Set the background color of the text area
         outputTextArea.setForeground(Color.WHITE); // Set the text color
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
-        chooseFileButton = new JButton("Choose File");
+        chooseButton = new JButton("Choose File/Folder");
         downloadPubChemButton = new JButton("Download PubChem");
         addMoleculeButton = new JButton("Add Molecule");
         findMoleculeButton = new JButton("Find Molecule");
         findSubgraphButton = new JButton("Find Subgraph");
         statisticsButton = new JButton("Database Statistics");
         displayMoleculeButton = new JButton("Display Molecule");
+        addProteinsButton = new JButton("Add Proteins");
+        makeSimpleButton = new JButton("Make Simple Molecules");
+        makeComplexButton = new JButton("Make Complex Molecules");
+        addMultipleMoleculesButton = new JButton("Add Multiple Molecules");
         filePathField = new JTextField(20); // to show the file path
-        JLabel filePathLabel = new JLabel("File Path:");
+        JLabel filePathLabel = new JLabel("File/Folder Path:");
         filePathLabel.setForeground(Color.WHITE); // Set the text color
         filePathField.setBackground(Color.WHITE); // Set the background color of the text field
         filePathField.setForeground(Color.BLACK); // Set the text color
 
-        // Add components to the JFrame
+        // Create panels
+        JPanel firstRowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        firstRowPanel.setBackground(Color.BLACK);
+        firstRowPanel.add(chooseButton);
+        firstRowPanel.add(addMoleculeButton);
+        firstRowPanel.add(findMoleculeButton);
+        firstRowPanel.add(findSubgraphButton);
+        firstRowPanel.add(displayMoleculeButton);
+        firstRowPanel.add(filePathLabel);
+        firstRowPanel.add(filePathField);
+
+        JPanel secondRowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        secondRowPanel.setBackground(Color.BLACK);
+        secondRowPanel.add(addMultipleMoleculesButton);
+        secondRowPanel.add(addProteinsButton);
+        secondRowPanel.add(makeSimpleButton);
+        secondRowPanel.add(makeComplexButton);
+        secondRowPanel.add(statisticsButton);
+
         JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBackground(Color.BLACK);
-        controlPanel.add(chooseFileButton);
-        controlPanel.add(downloadPubChemButton);
-        controlPanel.add(addMoleculeButton);
-        controlPanel.add(findMoleculeButton);
-        controlPanel.add(findSubgraphButton);
-        controlPanel.add(displayMoleculeButton);
-        controlPanel.add(statisticsButton);
-        controlPanel.add(filePathLabel);
-        controlPanel.add(filePathField);
+        controlPanel.add(firstRowPanel);
+        controlPanel.add(secondRowPanel);
+
         add(controlPanel, BorderLayout.NORTH); // to show the control panel (e.g., buttons)
         add(scrollPane, BorderLayout.CENTER); // to show the printed output text area
+
 
         // Initialize molecule database
         moleculeDb = new MDB(outputTextArea);
 
-        // Action listener for Choose File button
-        chooseFileButton.addActionListener(new ActionListener() {
+        // Action listener for Choose File/Folder button
+        final File[] lastOpenedDirectory = {new File(System.getProperty("user.home"))};
+        chooseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Create a file chooser
                 JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Choose a file");
+                fileChooser.setCurrentDirectory(lastOpenedDirectory[0]);
+                fileChooser.setDialogTitle("Choose File/Folder");
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 int result = fileChooser.showOpenDialog(GUI.this);
                 // If a file is selected, set its path in the molecule path field
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     filePathField.setText(selectedFile.getAbsolutePath());
+                    lastOpenedDirectory[0] = selectedFile.getParentFile();
                 }
             }
         });
@@ -103,6 +130,7 @@ public class GUI extends JFrame {
                     String start = indexes[0];
                     String end = indexes[1];
                     moleculeDb.downloadPubChem(start, end);
+                    outputTextArea.append("Download complete!" + "\n\n");
                 } else {
                     outputTextArea.append("Invalid Input" + "\n\n");
                 }
@@ -171,8 +199,8 @@ public class GUI extends JFrame {
                     moleculeName = reader.readLine(); // Read the first line to get the molecule name
 
                 } catch (IOException ex) {
-                    System.err.println("Error reading the file: " + ex.getMessage());
-                    outputTextArea.append("Error reading the file:" + ex.getMessage() + "\n\n");
+                    System.err.println("File reading error. Please check file format.");
+                    outputTextArea.append("File reading error. Please check file format." + "\n\n");
                     return;
                 }
 
@@ -196,7 +224,7 @@ public class GUI extends JFrame {
                     imageFrame.setVisible(true); // Make the frame visible
 
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    System.err.println("Molecule display failed. The provided molecule name may be incorrect or does not match any records in the PubChem database.");
                     outputTextArea.append("Molecule display failed. The provided molecule name may be incorrect or does not match any records in the PubChem database.\n\n");
                 }
             }
@@ -207,6 +235,82 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 moleculeDb.printDb(); // print the content of database
+            }
+        });
+
+        // Action listener for the Add Proteins button
+        addProteinsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String moleculePath = filePathField.getText();
+                try {
+                    addProteins(moleculePath);
+                } catch (Exception ex) {
+                    System.err.println("Adding proteins failed.");
+                    outputTextArea.append("Adding proteins failed." + "\n\n");
+                }
+            }
+        });
+
+        // Action listener for Make Simple Molecules button
+        makeSimpleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                outputTextArea.append("Generating 10 million molecule files, each containing 52 to 136 atoms." + "\n");
+                outputTextArea.append("To follow the progress, please observe the terminal output." + "\n");
+                outputTextArea.append("Generating..." + "\n");
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        try {
+                            ProteinFactory.manySimpleProteins();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        return null;
+                    }
+                    @Override
+                    protected void done() {
+                        outputTextArea.append("Complete!" + "\n\n");
+                    }
+                };
+                worker.execute(); // Start the background task
+            }
+        });
+
+
+        // Action listener for Make Complex Molecules button
+        makeComplexButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                outputTextArea.append("Generating 10,000 million molecule files, each containing over 10,000 atoms." + "\n");
+                outputTextArea.append("To follow the progress, please observe the terminal output." + "\n");
+                outputTextArea.append("Generating..." + "\n");
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        try {
+                            ProteinFactory.fewComplexProteins();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        return null;
+                    }
+                    @Override
+                    protected void done() {
+                        outputTextArea.append("Complete!" + "\n\n");
+                    }
+                };
+                worker.execute(); // Start the background task
+            }
+        });
+
+        // Action listener for Add Multiple Molecules button
+        addMultipleMoleculesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String moleculePath = filePathField.getText();
+                moleculeDb.addMultipleMolecules(moleculePath);
             }
         });
 
@@ -275,6 +379,19 @@ public class GUI extends JFrame {
         if (dbFile.exists()) {
             moleculeDb.load(dbName);
         }
+    }
+
+    public static void addProteins(String proteinPath) throws IOException {
+        Files.walkFileTree(Paths.get(proteinPath), new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (!Files.isDirectory(file)) {
+                    moleculeDb.addMolecule(new Molecule(proteinPath + "/" +
+                            file.getParent().toString() + "/" + file.getFileName().toString()));
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     /**
