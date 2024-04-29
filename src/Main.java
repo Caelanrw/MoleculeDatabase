@@ -122,6 +122,13 @@ public class Main {
                     printVerbose("invalid Input");
                 }
                 break;
+            case "--delete":
+                boolean delete= moleculeDb.deleteMolecule(new Molecule(moleculePath));
+                if(delete)
+                    printVerbose("Successfully Deleted");
+                else
+                    printVerbose("Molecule not deleted or already not in the database");
+                break;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;

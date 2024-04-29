@@ -176,6 +176,30 @@ public class MoleculeDatabase {
 
         return returnList;
     }
+
+    /**
+     * Delete a given molecule if it is in the database
+     */
+    public boolean deleteMolecule(Molecule molecule){
+        // Retrieve the partitioned array list based on the number of atoms
+        int numAtoms = molecule.getNumAtoms();
+        if (!db.containsKey(numAtoms)) {
+            return false;
+        }
+        ArrayList<Molecule> moleculesWithSameNumAtoms = db.get(numAtoms);
+
+        // Iterate through the array list of molecules with the same number of atoms
+        for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
+            Molecule result = dbMolecule.areMoleculesEqual(molecule);
+            if (result != null) {
+                db.get(numAtoms).remove(dbMolecule);
+                return true; // successfully delete the molecule
+            }
+        }
+        return false; // Return false if molecule not in database
+    }
+
+
     /**
      * Save database to file system
      */
