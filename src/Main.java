@@ -127,7 +127,7 @@ public class Main {
                 if(delete)
                     printVerbose("Successfully Deleted");
                 else
-                    printVerbose("Molecule not deleted or already not in the database");
+                    System.out.println("Molecule not in the database");
                 break;
             default:
                 printVerbose("unrecognized command: " + cmd);

@@ -192,7 +192,7 @@ public class MoleculeDatabase {
         for (Molecule dbMolecule : moleculesWithSameNumAtoms) {
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
-                db.get(numAtoms).remove(dbMolecule);
+                this.db.get(numAtoms).remove(dbMolecule);
                 return true; // successfully delete the molecule
             }
         }
