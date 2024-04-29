@@ -123,7 +123,7 @@ public class Molecule implements Serializable {
         }
 
         // If all comparisons passed, the molecules are equal
-        return this;
+        return extensiveSearch(otherMolecule);
     }
 
 
@@ -231,6 +231,9 @@ public class Molecule implements Serializable {
         if (this.numEdges < subgraph.numEdges)
             return null;
 
+        return extensiveSearch(subgraph);
+    }
+    public Molecule extensiveSearch(Molecule subgraph) {
         //Hashmap of candidates
         HashMap<Atom, ArrayList<Atom>> CandidateList = new HashMap<>();
 
