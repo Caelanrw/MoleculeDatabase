@@ -107,9 +107,9 @@ In this structure, each integer key corresponds to an ArrayList containing molec
 
 **How it was implemented:** 
 
-Our database utilizes an array-based organization where each index corresponds to the number of atoms in a molecule. The array is structured so molecules with the same number of atoms are grouped together.  We were able to take advantage of this when searching for a molecule. We begin by examining the number of atoms we are searching for in the molecule. If no molecules are stored at the corresponding index in the database, we immediately know that the molecule is not present. If molecules are stored in this index, we only have to focus on these.
-
+Our database utilizes a hashmap-based organization where each key corresponds to the number of atoms in a molecule. The hashmap is structured so molecules with the same number of atoms are grouped together in an ArrayList, stored as the value for each key in the hashmap.  We were able to take advantage of this when searching for a molecule. We begin by examining the number of atoms we are searching for in the molecule. If no molecules are stored at the corresponding key in the database, we immediately know that the molecule is not present. If molecules are stored in this key of the hashmap, we only have to focus on these.
 Next, we can analyze the specific characteristics of both the target molecule and each molecule sharing the same count of atoms. We use the function areMoleculesEqual() to compare the molecule we are searching for with the other molecules individually. Each molecule has an array, numElements, of size 118, where each index corresponds to an atomic number of an element. Within this array, each index holds a count representing the number of occurrences of each element in the molecule. We compare the numElements arrays of both molecules, and we can determine if they are not the same and if there are any inconsistencies. Afterward, we verify that each molecule's total number of edges matches. Following this comparison, we proceed with a deeper examination of each atom in both molecules. For every atom in the first molecule, we ensure a corresponding atom exists in the second molecule. We compare the atoms by looking at their atomic number, degree of edges, and bonds. We ensure that each bond of the atom is exactly the same as the bonds of the atom in the second molecule. If, at any point, inconsistencies between the two molecules arise, we conclude that the molecules are not identical. The function will only return that a molecule has been found in the database if it satisfies all the tests.
+
 
 
 
@@ -123,6 +123,8 @@ Next, we can analyze the specific characteristics of both the target molecule an
 To execute the program via the command-line interface, navigate to the directory where the md file is located. Once in the directory, users can run one of the following commands:
 
 ./md --addMolecule [FILE PATH]: This command adds the molecule specified in the file path to the database. For example, to add biotin from the file biotin.txt to the database, run: ./md --addMolecule /path/to/directory/biotin.txt. 
+
+./md --delete [FILE PATH]: This command deletes the molecule specified in the file path to the database. For example, to delete biotin from the file biotin.txt, run:./md --delete /path/to/directory/biotin.txt
 
 ./md --findMolecule [FILE PATH]: This command searches for the isomorphic molecule specified in the file path within the database. For instance, to find an isomorphic molecule to biotin within the database using the file biotin.txt, run: ./md --findMolecule /path/to/directory/biotin.txt. If the program finds an exact match, it will display “FOUND.” If not, it will show “NO EXACT MATCH FOUND” and return the most similar molecule to the given molecule within the database.
 
@@ -162,6 +164,8 @@ The graphical user interface (GUI), constructed using the built-in Java Swing JF
 Choose File: Initiates a window allowing users to select a molecule file for processing. Upon selection, the chosen file's path is displayed in the designated field.
 
 Add Molecule: This button allows users to add a molecule to the database. The program reads the file specified by the user and adds the molecule to the database. Upon successful addition, a message "Molecule added: [molecule name]" appears. This button calls the function addMolecule() to add the molecule to the database.
+
+Delete Molecule: This button allows users to delete a molecule from the database. The program reads the file specified by the user and deletes the molecule from the database. Upon successful deletion, a message “Successfully Deleted” appears. If the molecule was already gone from the database, the message “Molecule not in the database” appears. This button calls the deleteMolecule() function to delete.
 
 Find Molecule: Users can select a molecule file and click this button to search for an isomorphic molecule in the database. Once the button is clicked, the findMolecule() method is called to handle the request. The GUI displays a "FOUND" message if an isomorphic molecule is found. If not found, it shows "NOT FOUND" and the program will call similarMolecule() method to return the name of the most similar molecule in the database.
 
@@ -243,7 +247,8 @@ Subsequently, points will be added if the molecules have the same number of atom
 
 Each edge originating from each atom in the first molecule is compared to each edge in the second molecule. If the method finds an edge that exactly matches the edge in the second molecule, then a point is added, the edge is marked as counted for, and the associated atom is marked as seen. The edges are considered identical if the elements involved and the degree of the edge (e.g., single bond, double bond, triple bond) are the same.
 
-Given that our molecule database is organized as an array where each index i holds the molecules that have i atoms in them, we opted to compute the similarity score only for molecules with a number of atoms within 100 of the molecule we are searching for. This decision stems from the anticipation that molecules with a significantly larger or smaller number of atoms will exhibit substantial differences. By limiting the number scope of molecules considered for similarity scoring, we optimize efficiency when there is a wide variance in the number of atoms among the molecules in our database.
+Given that our molecule database is organized as a HashMap where the value for each key is an ArrayList of molecules that have the same number of atoms as the key, we opted to compute the similarity score only for molecules with a number of atoms within 100 of the molecule we are searching for. This decision stems from the anticipation that molecules with a significantly larger or smaller number of atoms will exhibit substantial differences. By limiting the number scope of molecules considered for similarity scoring, we optimize efficiency when there is a wide variance in the number of atoms among the molecules in our database.
+
 
 
 
@@ -284,7 +289,7 @@ Link to a folder containing all testing code utilized to observe the correctness
 # Work Breakdown
 Hyunsoo Kim implemented the Main.java, the MoleculeDatabase.java, and the ProteinFactory.java. Hyunsoo helped discover useful PubChem APIs and put together testing and benchmarking suite, and also contributed to the README.md file. 
 
-Caelan Wong implemented the mostSimilar() method in Molecule.java and MoleculeDatabase.java to run whenever findMolecule() returns null. Also, Caelan helped with the early implementation of the addMolecule() method and created the PeriodicTable.java enum. Lastly, Caelan helped with the README.md.
+Caelan Wong implemented the mostSimilar() method in Molecule.java and MoleculeDatabase.java to run whenever findMolecule() returns null. Also, Caelan helped with the early implementation of the addMolecule() method and created the PeriodicTable.java enum. In addition, Caelan implemented the deleteMolecule() function in the GUI and command line interface. Lastly, Caelan helped with the README.md.
 
 Phuong Khanh Tran helped implement MoleculeDatabase.java, which initializes the database, designed GUI.java, which constructs the graphical user interface, and coded MDB.java, which creates the database that can work with the GUI. Additionally, Phuong contributed to writing the README.md and INSTALL.txt files.
 
