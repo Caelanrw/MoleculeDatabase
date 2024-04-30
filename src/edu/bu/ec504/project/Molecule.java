@@ -123,7 +123,7 @@ public class Molecule implements Serializable {
         }
 
         // If all comparisons passed, the molecules are equal
-        return extensiveSearch(otherMolecule);
+        return this;
     }
 
 
