@@ -75,7 +75,7 @@ public class GUI extends JFrame {
         firstRowPanel.setBackground(Color.BLACK);
         firstRowPanel.add(chooseButton);
         firstRowPanel.add(addMoleculeButton);
-        firstRow.Panel.add(deleteMoleculeButton);
+        firstRowPanel.add(deleteMoleculeButton);
         firstRowPanel.add(findMoleculeButton);
         firstRowPanel.add(findSubgraphButton);
         firstRowPanel.add(displayMoleculeButton);
