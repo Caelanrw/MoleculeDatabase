@@ -1,12 +1,13 @@
 1. Pre-conditions 
 - The command-line interface is only compatible with Linux (e.g., lab machines) and MacOS systems.
 - The GUI can be run on the lab machine using the command "source idea-IE.sh" to open IntelliJ and click the "Run" button on the GUI.java file. If none of the IDEs on the lab machine work for you due to licensing requirements, please try the GUI on your local machine.
-- To use the PubChem download molecule capabilities, Python 3.10, 3.11, or 3.12, with the latest version of pip, is required. If you are using the lab machine, please make sure to update Python and pip to the latest version.
+- To use the PubChem download molecule capabilities, Python 3.10, 3.11, or 3.12, with the latest version of pip, is required. If you are using the lab machine, please make sure to update Python and pip to the latest version. If you are using the lab machine, load an updated module of Python by running: module load anaconda/3
 - In addition, please make sure to update Java 17 on the lab computer by running the following terminal command: source /ad/eng/opt/java/add_jdk17.sh
 
 2. Supporting files
 a. A list of non-standard libraries needed in order to generate Molecule inputs using the Python script and the command --downloadPubChem: 
-	- NetworkX: $ pip install --user networkx[default]
+	- NetworkX: $ pip install --user networkx[default]  On the lab machines, NetworkX is installed by default (after loading anaconda/3), and this step can be ignored.
+
 b. Users can download and store all molecules for their work with the molecule database. Here are some examples of how the molecule database can benefit:
 	- Users can utilize the GUI to visualize molecules from text files in 2D Lewis structures before adding them to the database. 
 	- If users have multiple molecule files, they can start with a clean database, add all molecules, and then search for isomorphic molecules they are interested in. The same applies when users want to find all molecules that contain a given subgraph.
@@ -19,9 +20,10 @@ c. Descriptions of testing patterns and instructions on how to exercise them:
 3. Execution
 a. Instructions on how to run the program on the terminal: To execute the program via the command-line interface, navigate to the directory where the md file is located. Once in the directory, users can run one of the following commands:
 	- ./md --addMolecule [FILE PATH]: This command adds the molecule specified in the file path to the database. For example, to add biotin from the file biotin.txt to the database, run: ./md --addMolecule /path/to/directory/biotin.txt. 
+	- ./md --delete [FILE PATH]: This command deletes a specified molecule in the file path to the database. For example, to delete biotin from the file biotin.txt, run: ./md --delete /path/to/directory/biotin.txt
 	- ./md --findMolecule [FILE PATH]: This command searches for the isomorphic molecule specified in the file path within the database. For instance, to find an isomorphic molecule to biotin within the database using the file biotin.txt, run: ./md --findMolecule /path/to/directory/biotin.txt. 
 	- ./md --findSubgraph [FILE PATH]: This command finds and outputs all molecules containing a subgraph provided in the file path.
-	- ./md --downloadPubChem start,end: This command downloads molecules from the PubChem database. "start" and "end" are indices or Compound ID (CID) numbers of the molecules in the PubChem database. For example, to download molecules 20-27, type: ./md --downloadPubChem 20,27
+	- ./md --downloadPubChem start,end: This command downloads molecules from the PubChem database. "start" and "end" are indices or Compound ID (CID) numbers of the molecules in the PubChem database. For example, to download molecules 20-27, type: ./md --downloadPubChem 20,27. A verbose output will print the names of all the created molecule files, while a normal output will print Download Complete on finishing successfully.
 	- ./md --printDb: This command prints the list of molecules inside the database and their number of atoms.
 	- ./md --printName: This command prints the name of the database.
 	- ./md --verbose: Upon entering this command, all subsequent commands will display additional information about the database (e.g., error messages). If the user runs this command again, subsequent commands will not output additional information.
@@ -35,6 +37,7 @@ a. Instructions on how to run the program on the terminal: To execute the progra
 b. Instructions on how to run the program using the GUI: To launch the GUI, simply click "Run" on the GUI.java file if using an Integrated Development Environment (IDE) like IntelliJ. Upon initialization, the GUI presents seven buttons for user interaction, accompanied by a sizable output area to display program results. Here are the instructions on how to use each button:
 	- Choose File: Initiates a window allowing users to select a molecule file for processing. Upon selection, the chosen file's path is displayed in the designated field.
 	- Add Molecule: Users can select a molecule file and click this button to add the molecule to the database.
+	- Delete Molecule: Users can select a molecule file and click this button to delete the molecule from the database. This button will only delete one instance of the molecule at a time, giving the user greater control over how they want to handle duplicate molecules. If the molecule isn’t in the database, it will be indicated in the GUI output.
 	- Find Molecule: Users can select a molecule file and click this button to search for an isomorphic molecule in the database. 
 	- Find Subgraph: To find a subgraph, the user selects a file containing the desired subgraph and then clicks on this button to initiate the search for all molecules containing the provided subgraph. 
 	- Display Molecule: Similarly, users can select a molecule file and click this button to view the molecule's 2D Lewis structure in a separate pop-up window. 
