@@ -12,6 +12,7 @@ b. Users can download and store all molecules for their work with the molecule d
 	- Users can utilize the GUI to visualize molecules from text files in 2D Lewis structures before adding them to the database. 
 	- If users have multiple molecule files, they can start with a clean database, add all molecules, and then search for isomorphic molecules they are interested in. The same applies when users want to find all molecules that contain a given subgraph.
 	- Lastly, users can examine all molecule names, along with statistics like the number of atoms in each molecule, and identify the largest or smallest molecule among the files by printing the molecule database.
+	
 c. Descriptions of testing patterns and instructions on how to exercise them:
 	- We have prepared 25 molecule text files in the directory group4/testcases/molecules for testing the program. 
 	- Additionally, to test the finding isomorphic molecule feature, we have set up a separate directory called group4/testcases/isomorphic_test. This directory contains text files of isomorphic molecules. For example, the file named biotin_iso.txt contains the isomorphic molecule of biotin. Users can use this file and biotin.txt inside group4/testcases/molecules to test the isomorphic molecule search feature.
