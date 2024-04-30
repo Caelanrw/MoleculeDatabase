@@ -24,6 +24,7 @@ public class GUI extends JFrame {
     private JButton makeComplexButton;
     private JButton addProteinsButton;
     private JButton addMultipleMoleculesButton;
+    private JButton deleteMoleculeButton;
     private JTextField filePathField;
     private JTextField pubChemField;
     private static MDB moleculeDb;
@@ -48,6 +49,7 @@ public class GUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
         chooseButton = new JButton("Choose File/Folder");
         downloadPubChemButton = new JButton("Download PubChem");
+        deleteMoleculeButton = new JButton("Delete Molecule");
         addMoleculeButton = new JButton("Add Molecule");
         findMoleculeButton = new JButton("Find Molecule");
         findSubgraphButton = new JButton("Find Subgraph");
@@ -73,7 +75,7 @@ public class GUI extends JFrame {
         firstRowPanel.setBackground(Color.BLACK);
         firstRowPanel.add(chooseButton);
         firstRowPanel.add(addMoleculeButton);
-        // add delete button here
+        firstRow.Panel.add(deleteMoleculeButton);
         firstRowPanel.add(findMoleculeButton);
         firstRowPanel.add(findSubgraphButton);
         firstRowPanel.add(displayMoleculeButton);
@@ -144,6 +146,23 @@ public class GUI extends JFrame {
                 } else {
                     outputTextArea.append("Invalid Input" + "\n\n");
                 }
+            }
+        });
+
+
+        //Action Listener for Delete Molecule button
+        deleteMoleculeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the molecule path from the text field
+                String moleculePath = filePathField.getText();
+                // Execute the findMolecule command
+                boolean delete= moleculeDb.deleteMolecule(new Molecule(moleculePath));
+                if(delete)
+                    outputTextArea.append("Successfully Deleted" + "\n\n");
+                else
+                    outputTextArea.append("Molecule not in the database" + "\n\n");
+
             }
         });
 

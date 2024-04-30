@@ -126,6 +126,13 @@ public class Main {
             case "--addBulk":
                 moleculeDb.addMultipleMolecules(moleculePath);
                 break;
+            case "--delete":
+                boolean delete= moleculeDb.deleteMolecule(new Molecule(moleculePath));
+                if(delete)
+                    printVerbose("Successfully Deleted");
+                else
+                    System.out.println("Molecule not in the database");
+                break;
             default:
                 printVerbose("unrecognized command: " + cmd);
                 break;
