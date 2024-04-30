@@ -155,9 +155,9 @@ The Main.java class, which facilitates the command-line interface, also includes
 
 **How it was implemented:**
 
-The graphical user interface (GUI), constructed using the built-in Java Swing JFrame class, facilitates program interactive operations. To launch the GUI, simply click "Run" on the GUI.java file if using an Integrated Development Environment (IDE) like IntelliJ. Upon initialization, the GUI presents seven buttons for user interaction, accompanied by a sizable output area to display program results. Here are the functionalities of each button:
+The graphical user interface (GUI), constructed using the built-in Java Swing JFrame class, facilitates program interactive operations. To launch the GUI, simply click "Run" on the GUI.java file if using an Integrated Development Environment (IDE) like IntelliJ. If using the terminal, at the group4 directory, please run the following command: ./gui. Upon initialization, the GUI presents 12 buttons for user interaction, accompanied by a sizable output area to display program results. Here are the functionalities of each button:
 
-Choose File: Initiates a window allowing users to select a molecule file for processing. Upon selection, the chosen file's path is displayed in the designated field.
+Choose File/Folder: Initiates a window allowing users to select a molecule file or folder for processing. Upon selection, the chosen path is displayed in the designated field.
 
 Add Molecule: This button allows users to add a molecule to the database. The program reads the file specified by the user and adds the molecule to the database. Upon successful addition, a message "Molecule added: [molecule name]" appears. This button calls the function addMolecule() to add the molecule to the database.
 
@@ -167,11 +167,21 @@ Find Molecule: Users can select a molecule file and click this button to search 
 
 Find Subgraph: To find a subgraph, the user selects a file containing the desired subgraph and then clicks on this button to initiate the search for all molecules containing the provided subgraph. Upon clicking the button, the GUI activates the findSubgraph() method to execute the operation.
 
-Display Molecule: Similarly, users can select a molecule file and click this button to view the 2D Lewis structure of the molecule in a separate pop-up window. Note that the file must be in the correct format, and the molecule must be registered in the PubChem database for viewing. This button makes use of the following API URL that returns the image of the molecule: https://cactus.nci.nih.gov/chemical/structure/"molecule name"/"representation", where molecule name is the name of the molecule and representation is the desired returning format. Once the button is clicked, the GUI reads the file to extract the molecule's name and creates the URL that can return the Lewis structure image of the molecule.
+Display Molecule: Similarly, users can select a molecule file and click this button to view the 2D Lewis structure of the molecule in a separate pop-up window. Note that the file must be in the correct format, and the molecule must be registered in the PubChem database for viewing. This button makes use of the following API URL that returns the image of the molecule: https://cactus.nci.nih.gov/chemical/structure/"molecule name"/"representation", where molecule name is the name of the molecule and representation is the desired returning format [1]. Once the button is clicked, the GUI reads the file to extract the molecule's name and creates the URL that can return the Lewis structure image of the molecule.
 
-Download PubChem: Users can specify a range of CID indices (start, end) in the file path to download molecules from the PubChem database. For example, type 14,16 in the file path and click this button to download molecules 14-16. Please note that certain molecules without a title name or with non-integer bond orders, as indicated in the PubChem database, will be skipped during the download. Upon clicking this button, downloadPubChem.py will be called to handle the download operation.
+Download PubChem: Users can specify a range of CID indices (start, end) in the “Start,End CID Index” input section to download molecules from the 
+
+PubChem database. For example, type 14,16 in the input section and click this button to download molecules 14-16. Please note that certain molecules without a title name or with non-integer bond orders, as indicated in the PubChem database, will be skipped during the download. Upon clicking this button, downloadPubChem.py will be called to handle the download operation.
 
 Database Statistics: Clicking this option prints database statistics, including the total number of molecules, a list of molecules with their names and the number of atoms, and the names of the smallest and largest molecules in the database. This button activates the printDb() method inside the MoleculeDatabase class, which is responsible for the printing executions. 
+
+Add Multiple Molecules: Users can select a folder containing multiple molecule text files and click this button to add all molecules in the specified folder to the database. This button invokes the addMultipleMolecules() method.
+
+Make Simple Molecules: Users can click this button to generate 10 million molecule files, each having between 52 and 136 atoms. Please monitor the terminal output for progress updates. Molecules are saved in folder named `simple` that is located in the same directory as the project folder. This button calls the manySimpleProteins() function. 
+
+Make Complex Molecules: Users can click this button to create 10,000 million molecule files, each with over 10,000 atoms. Please monitor the terminal output for progress updates. Molecules are saved in Complex folder which is located in the same directory as the project folder. Upon clicking this button, fewComplexProteins() will be called. 
+
+Add Proteins: Users can add protein molecules to the database after creating them from the `Make Simple Molecules` and `Make Complex Molecules` buttons. Please make sure to choose a file path, either from Complex or Simple folders, as indicated above. 
 
 When the GUI is closed, the program automatically saves the working database as molecule.db in the same project folder. Upon reopening, the database loads automatically, and a message confirming successful loading is displayed.
 
@@ -184,7 +194,7 @@ When the GUI is closed, the program automatically saves the working database as 
 
 **How it was implemented:**
 
-The PubChem database is supported by a Power User Getaway (PUG) REST-style API, providing simple access to their database from third-party scripts. Specifically, our implementation utilizes the Compound ID (CID) to submit an HTTP request to “https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/1/property/Title,CanonicalSMILES/json”, and receives a JSON response with the CID, compound Title and Canonical SMILES representation of the compound. This request is carried out in a Python script, with supporting libraries such as PySMILES to read SMILES strings and NetworkX for molecular graph representation. 
+The PubChem database is supported by a Power User Getaway (PUG) REST-style API, providing simple access to their database from third-party scripts. Specifically, our implementation utilizes the Compound ID (CID) to submit an HTTP request to “https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/1/property/Title,CanonicalSMILES/json”, and receives a JSON response with the CID, compound Title and Canonical SMILES representation of the compound. This request is carried out in a Python script, with supporting libraries such as PySMILES to read SMILES strings and NetworkX for molecular graph representation [2].
 
 The script parses the JSON response for the compound’s CID, Title, and SMILES and generates valid molecule inputs for the database. PySMILES provides a helper function, read_smiles, which generates a NetworkX graph object of the molecule. Then, NetworkX is used to write an edge list for the graph, and metadata such as the Title of the compound, the number of atoms, and the atom names are placed in front of the edge list. This constitutes a valid molecule input format for our database, which is then saved as a *.txt file with the name [“molecule” + CID + “.txt”]. When interpreting SMILES Strings, any SMILES containing non-integer bond values (e.g., 1.5) will be ignored. Additionally, any PubChem CIDs without a Title index will also be ignored.
 
@@ -262,17 +272,9 @@ Subgraph search was implemented using the same heuristics as findMolecule(), whe
 We decided not to use the VF2++ algorithm or any database-implementing techniques stated in the Initial Project Defense because we found a sufficient way to build our molecule database using simple data structures such as HashMaps, LinkedLists, and ArrayLists. We also use the same data structures to implement search algorithms for finding isomorphic molecules and similar subgraphs.
 
 # References
-[1] J. Balaji, “Distributed Graph Storage And Querying System,” Computer Science Dissertations, Aug. 2016, doi: https://doi.org/10.57709/8866663.
+[1] “NCI/CADD Chemical Identifier Resolver.” Accessed: Apr. 29, 2024. [Online]. Available: https://cactus.nci.nih.gov/chemical/structure
 
-[2] V. Ingalalli, D. Ienco, and P. Poncelet, “SuMGra: Querying Multigraphs via Efficient Indexing,” in Database and Expert Systems Applications, S. Hartmann and H. Ma, Eds., in Lecture Notes in Computer Science. Cham: Springer International Publishing, 2016, pp. 387–401. doi: 10.1007/978-3-319-44403-1_24.
-
-[3] G. Micale, V. Bonnici, A. Ferro, D. Shasha, R. Giugno, and A. Pulvirenti, “MultiRI: Fast Subgraph Matching in Labeled Multigraphs.” arXiv, Mar. 25, 2020. doi: 10.48550/arXiv.2003.11546.
-
-[4] L. P. Cordella, P. Foggia, C. Sansone, and M. Vento, “An Improved Algorithm for Matching Large Graphs”.
-
-[5] P. Foggia, C. Sansone, and M. Vento, “A Performance Comparison of Five Algorithms for Graph Isomorphism,” 2001. Accessed: Mar. 04, 2024. [Online]. Available: https://www.semanticscholar.org/paper/A-Performance-Comparison-of-Five-Algorithms-for-Foggia-Sansone/e9ba06897d929351c42c5239197a49b9a242f3a0
-
-[6] “VF2++—An improved subgraph isomorphism algorithm,” Discrete Applied Mathematics, vol. 242, pp. 69–81, Jun. 2018, doi: 10.1016/j.dam.2018.02.018.
+[2] P. C. Kroon, “pckroon/pysmiles.” Apr. 29, 2024. Accessed: Apr. 29, 2024. [Online]. Available: https://github.com/pckroon/pysmiles
 
 # Code
 
