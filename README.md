@@ -76,8 +76,8 @@ Hyunsoo Kim, Caelan Wong, Phuong Khanh Tran, Tristen Liu, Jason Calalang
 
 We decided to design the back end of the database storage with the main structure of a large HashMap, with an integer key and ArrayList of molecules as the value. Each key belongs to an array list containing all molecules with the same number of atoms. This feature simplifies future heuristics and is easily quantifiable from the input text file. The Molecule class itself contains its name, the number of atoms, the number of edges, and the count of each element. The count of each element is an array of integers where the index represents the atomic number, and the value is the count. For example, a molecule consisting of only 3 carbons and 2 hydrogen atoms would be represented with values 3 at index 6 and 2 at index 1. The rest of the array would be 0. 
 
-
 The Molecule class would also have an array list of the Atom class. Each atom has its own unique name for identification, its atomic number, its degree, and a HashMap of all the atoms it is connected to. To represent connections, the key to the HashMap is the name of the connected atoms, and the value is a pair made of an atomic number and bond order. Bond order simply notes how many edges are between two specific atoms. Molecules are treated as undirected, so any two connected atoms will have an edge pair listed twice, once in each atom’s connected list. We keep track of specific features, like degree and element count, to aid comparison when specific molecules are queried. 
+
 Since isomorphic molecules are equivalent to each other, we must test for isomorphism in each molecule. To save time on testing isomorphism for each molecule, we simply do not consider molecules with more or fewer atoms and those with different types of atoms and the number of edges. However, if these heuristics are all equal, we must perform an expensive test to see if the two molecules are isomorphic.
 
 
@@ -174,17 +174,17 @@ Display Molecule: Similarly, users can select a molecule file and click this but
 
 Download PubChem: Users can specify a range of CID indices (start, end) in the “Start,End CID Index” input section to download molecules from the 
 
-PubChem database. For example, type 14,16 in the input section and click this button to download molecules 14-16. Please note that certain molecules without a title name or with non-integer bond orders, as indicated in the PubChem database, will be skipped during the download. Upon clicking this button, downloadPubChem.py will be called to handle the download operation.
+PubChem database. For example, type 14,16 in the input section and click this button to download molecules 14-16. Please note that certain molecules without a title name or with non-integer bond orders, as indicated in the PubChem database, will be skipped during the download. Upon clicking this button, `downloadPubChem.py` will be called to handle the download operation.
 
 Database Statistics: Clicking this option prints database statistics, including the total number of molecules, a list of molecules with their names and the number of atoms, and the names of the smallest and largest molecules in the database. This button activates the printDb() method inside the MoleculeDatabase class, which is responsible for the printing executions. 
 
 Add Multiple Molecules: Users can select a folder containing multiple molecule text files and click this button to add all molecules in the specified folder to the database. This button invokes the `addMultipleMolecules()` method.
 
-Make Simple Molecules: Users can click this button to generate 10 million molecule files, each having between 52 and 136 atoms. Please monitor the terminal output for progress updates. Molecules are saved in folder named `simple` that is located in the same directory as the project folder. This button calls the manySimpleProteins() function. 
+Make Simple Molecules: Users can click this button to generate 10 million molecule files, each having between 52 and 136 atoms. Please monitor the terminal output for progress updates. Molecules are saved in folder named `simple` that is located in the same directory as the project folder. This button calls the `manySimpleProteins()` function. 
 
-Make Complex Molecules: Users can click this button to create 10,000 million molecule files, each with over 10,000 atoms. Please monitor the terminal output for progress updates. Molecules are saved in Complex folder which is located in the same directory as the project folder. Upon clicking this button, fewComplexProteins() will be called. 
+Make Complex Molecules: Users can click this button to create 10,000 million molecule files, each with over 10,000 atoms. Please monitor the terminal output for progress updates. Molecules are saved in `complex` folder which is located in the same directory as the project folder. Upon clicking this button, `fewComplexProteins()` will be called. 
 
-Add Proteins: Users can add protein molecules to the database after creating them from the `Make Simple Molecules` and `Make Complex Molecules` buttons. Please make sure to choose a file path, either from Complex or Simple folders, as indicated above. 
+Add Proteins: Users can add protein molecules to the database after creating them from the `Make Simple Molecules` and `Make Complex Molecules` buttons. Please make sure to choose a file path, either from `complex` or `simple` folders, as indicated above. 
 
 When the GUI is closed, the program automatically saves the working database as molecule.db in the same project folder. Upon reopening, the database loads automatically, and a message confirming successful loading is displayed.
 
@@ -201,7 +201,7 @@ The PubChem database is supported by a Power User Getaway (PUG) REST-style API, 
 
 The script parses the JSON response for the compound’s CID, Title, and SMILES and generates valid molecule inputs for the database. PySMILES provides a helper function, read_smiles, which generates a NetworkX graph object of the molecule. Then, NetworkX is used to write an edge list for the graph, and metadata such as the Title of the compound, the number of atoms, and the atom names are placed in front of the edge list. This constitutes a valid molecule input format for our database, which is then saved as a *.txt file with the name [“molecule” + CID + “.txt”]. When interpreting SMILES Strings, any SMILES containing non-integer bond values (e.g., 1.5) will be ignored. Additionally, any PubChem CIDs without a Title index will also be ignored.
 
-Two scripts are provided for generating input files, one that is meant to be called by the Main.java class (downloadPubChem.py) and one that is interactable through a CLI (molecule_input.py). The Main.java class provides a range of CIDs that are automatically inserted into the database with the command --downloadPubChem start,end. When utilizing the user-intended command-line interface, several other functions are also provided, such as generating input files based on a user-provided SMILES String and generating isomorphic test files to test the --findMolecule command. The user is prompted to input what functions they would like to use, and the generated molecule input files are created in their respective folders. 
+Two scripts are provided for generating input files, one that is meant to be called by the Main.java class (`downloadPubChem.py`) and one that is interactable through a CLI (molecule_input.py). The Main.java class provides a range of CIDs that are automatically inserted into the database with the command --downloadPubChem start,end. When utilizing the user-intended command-line interface, several other functions are also provided, such as generating input files based on a user-provided SMILES String and generating isomorphic test files to test the --findMolecule command. The user is prompted to input what functions they would like to use, and the generated molecule input files are created in their respective folders. 
 
 
 
@@ -248,11 +248,11 @@ Dividing the database into multiple partitions is a solution in plan. They will 
 
 **How it was implemented:**
 
-The process for finding the most similar molecule is only initiated when the findMolecule() returns null, indicating that the molecule is not in the database. It is implemented using a point system to keep track of similarities between molecules. The molecule that has the highest similarity score is the molecule that is deemed the most similar. 
+The process for finding the most similar molecule is only initiated when the `findMolecule()` returns null, indicating that the molecule is not in the database. It is implemented using a point system to keep track of similarities between molecules. The molecule that has the highest similarity score is the molecule that is deemed the most similar. 
 
 Initially, the method looks at the numElements array of both molecules, which shows the count of each element in the molecule. A similarity point is added for each atom of the same element that they have in common. For example, if the first molecule has 2 Hydrogens, 4 Carbons, and 1 Nitrogen, and the second molecule has 1 hydrogen and 5 carbons, then 1 similarity point will be added for the hydrogen, and 4 points will be added from the carbons. 
 
-Subsequently, points will be added if the molecules have the same number of atoms or edges. Following this, the molecules will be compared based on similar edges that they have between atoms. This aspect of the method employs a similar heuristic to the  AreMoleculesEqual() method. 
+Subsequently, points will be added if the molecules have the same number of atoms or edges. Following this, the molecules will be compared based on similar edges that they have between atoms. This aspect of the method employs a similar heuristic to the `AreMoleculesEqual()` method. 
 
 Each edge originating from each atom in the first molecule is compared to each edge in the second molecule. If the method finds an edge that exactly matches the edge in the second molecule, then a point is added, the edge is marked as counted for, and the associated atom is marked as seen. The edges are considered identical if the elements involved and the degree of the edge (e.g., single bond, double bond, triple bond) are the same.
 
@@ -288,15 +288,15 @@ Link to all data necessary for project to run (drive link or repo link): None
 Link to a folder containing all testing code utilized to observe the correctness of your code: None
 
 # Work Breakdown
-Hyunsoo Kim implemented the Main.java, the MoleculeDatabase.java, and the ProteinFactory.java. In addition, Hyunsoo worked to implement a partitioned database scheme with manual memory management. Hyunsoo helped discover useful PubChem APIs and put together testing and benchmarking suite, and also contributed to the README.md file. 
+Hyunsoo Kim implemented the Main.java, the MoleculeDatabase.java, and the `ProteinFactory.java`. In addition, Hyunsoo worked to implement a partitioned database scheme with manual memory management,  Hyunsoo helped discover useful PubChem APIs and put together testing and benchmarking suite, and also contributed to the README.md file. 
 
-Caelan Wong implemented the mostSimilar() method in Molecule.java and MoleculeDatabase.java to run whenever findMolecule() returns null. Also, Caelan helped with the early implementation of the addMolecule() method and created the PeriodicTable.java enum. In addition, Caelan implemented the deleteMolecule() function in the GUI and command line interface. Lastly, Caelan helped with the README.md.
+Caelan Wong implemented the `mostSimilar()` method in Molecule.java and MoleculeDatabase.java to run whenever `findMolecule()` returns null. Also, Caelan helped with the early implementation of the `addMolecule()` method and created the PeriodicTable.java enum. In addition, Caelan implemented the `deleteMolecule()` function in the GUI and command line interface. Lastly, Caelan helped with the README.md.
 
-Phuong Khanh Tran helped implement MoleculeDatabase.java, which initializes the database, designed GUI.java, which constructs the graphical user interface, and coded MDB.java, which creates the database that can work with the GUI. Additionally, Phuong contributed to writing the README.md and INSTALL.txt files.
+Phuong Khanh Tran helped implement `MoleculeDatabase.java`, which initializes the database, designed `GUI.java`, which constructs the graphical user interface, and coded `MDB.java`, which creates the database that can work with the GUI. Additionally, Phuong contributed to writing the README.md and INSTALL.txt files.
 
-Tristen Liu implemented the testcases directory providing test input files in order to test the basic functionalities of the Molecule Database, as well as the downloadPubChem() function that is used in order to automatically download compounds into the database. They also contributed to the README.md file. 
+Tristen Liu implemented the testcases directory providing test input files in order to test the basic functionalities of the Molecule Database, as well as the `downloadPubChem()` function that is used in order to automatically download compounds into the database. They also contributed to the README.md file. 
 
-Jason Calalang implemented the findSubgraph() method in MoleculeDatabase.java and Molecule.java. They also helped implement the early design of the addMolecule() method and the logic behind the atom comparison in AreMoleculesEqual(). They also contributed to the README.md file.
+Jason Calalang implemented the `findSubgraph()` method in MoleculeDatabase.java and Molecule.java. They also helped implement the early design of the addMolecule() method and the logic behind the atom comparison in `AreMoleculesEqual()`. They also contributed to the README.md file.
 
 
 All members signed this README.md.
