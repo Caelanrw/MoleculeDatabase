@@ -1,4 +1,4 @@
-#Accepted feedback: Changes that were proposed in peer review and they you ended up adopting, together with a brief explanation why you chose to accept them.
+# Accepted feedback: Changes that were proposed in peer review and they you ended up adopting, together with a brief explanation why you chose to accept them.
 
 **Change 0:** 
 Previously, the file chooser always opened the home folder instead of the last accessed folder. We updated the file chooser to remember the previously selected folder, allowing users to revisit it without needing to navigate again. We acknowledged this feedback as navigating to a working directory each time users reselected a file could be cumbersome.
@@ -15,7 +15,7 @@ Multiple students noted that downloadPubChem was not working, which came as an o
 **Change 4** 
 One student suggested adding a delete feature to our database so that a user can remove duplicates or any other unwanted molecules. We agreed that this is an obvious feature that our database should have and as a result we implemented a delete button to our GUI and a delete function to the command line interface. A user needs to specify a file path to an unwanted molecule file and then will have the ability to remove that molecule from the database.
 
-#Rejected feedback: Changes that were proposed in peer review and they you ended up not adopting, together with a brief explanation why you chose to reject them.
+# Rejected feedback: Changes that were proposed in peer review and they you ended up not adopting, together with a brief explanation why you chose to reject them.
 
 
 **Change 0:** 
@@ -25,7 +25,7 @@ One reviewer suggested simplifying the search process by requesting only the mol
 One comment mentioned that the `--makeManySimple` command takes too long to generate the protein files on lab computers. Optimizing the command is not a high priority, and there is very little that can be done to make the lab computers run faster. Therefore, the comment is rejected.
 
 
-#Other changes: Changes that you implemented, but were not mentioned in peer review, together with a brief explanation for why you implemented them.
+# Other changes: Changes that you implemented, but were not mentioned in peer review, together with a brief explanation for why you implemented them.
 **Change 0:** 
 We revised our INSTALL.txt and README.md to improve clarity and understanding.
 
