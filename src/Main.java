@@ -118,9 +118,13 @@ public class Main {
                     String start = indexes[0];
                     String end = indexes[1];
                     moleculeDb.downloadPubChem(start, end);
+                    System.out.println("Download Complete!");
                 } else {
                     printVerbose("invalid Input");
                 }
+                break;
+            case "--addBulk":
+                moleculeDb.addMultipleMolecules(moleculePath);
                 break;
             case "--delete":
                 boolean delete= moleculeDb.deleteMolecule(new Molecule(moleculePath));

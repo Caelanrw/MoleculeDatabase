@@ -214,18 +214,42 @@ public class MDB {
                 filenames.add(file);
             }
 
-            int exitCode = process.waitFor();
-            outputTextArea.append("Exited with code: " + exitCode + "\n\n");
-
             // add created files to the database
             for (String filename : filenames) {
                 this.addMolecule(new Molecule(filename));
             }
 
+            outputTextArea.append("Download complete!" + "\n\n");
+
         } catch (Exception e) {
             outputTextArea.append("Error downloading from PubChem" + "\n\n");
-            e.printStackTrace();
         }
+    }
+
+    /**
+     * Add all molecules from a specified folder
+     */
+    public void addMultipleMolecules(String path) {
+        File directory = new File(path);
+        // Check if the directory exists
+        if (!directory.exists() || !directory.isDirectory()) {
+            outputTextArea.append("Invalid directory: " + path + "\n\n");
+            return;
+        }
+        // Get list of files in the directory
+        File[] files = directory.listFiles();
+        if (files == null) {
+            outputTextArea.append("No files found inside directory: " + path + "\n\n");
+            return;
+        }
+        // Iterate over the files in the directory
+        for (File file : files) {
+            // Check if the file is a text file
+            if (file.isFile() && file.getName().endsWith(".txt")) {
+                addMolecule(new Molecule(file.getAbsolutePath()));
+            }
+        }
+        outputTextArea.append("Complete adding all molecules from directory!" + "\n\n");
     }
 
     /**

@@ -141,17 +141,42 @@ public class MoleculeDatabase {
                 filenames.add(file);
             }
 
-            int exitCode = process.waitFor();
-            printVerbose("Exited with code: " + exitCode);
-
             // add created files to the database
             for (String filename : filenames) {
                 this.addMolecule(new Molecule(filename));
             }
 
+            System.out.println("Download complete!");
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error downloading from PubChem.");
         }
+    }
+
+    /**
+     * Add all molecules from a specified folder
+     */
+    public void addMultipleMolecules(String path) {
+        File directory = new File(path);
+        // Check if the directory exists
+        if (!directory.exists() || !directory.isDirectory()) {
+            System.out.println("Invalid directory: " + path);
+            return;
+        }
+        // Get list of files in the directory
+        File[] files = directory.listFiles();
+        if (files == null) {
+            System.out.println("No files found inside directory: " + path);
+            return;
+        }
+        // Iterate over the files in the directory
+        for (File file : files) {
+            // Check if the file is a text file
+            if (file.isFile() && file.getName().endsWith(".txt")) {
+                addMolecule(new Molecule(file.getAbsolutePath()));
+            }
+        }
+        System.out.println("Complete adding all molecules from directory!");
     }
 
 
@@ -231,52 +256,4 @@ public class MoleculeDatabase {
         fileInStream.close();
     }
 
-    /**
-     * Get database statistics as a string
-     * Note: this method is designed to work with the webpage
-     */
-    public String showDb() {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        // Print number of molecules
-        int size = 0;
-        for (ArrayList<Molecule> molecules : db.values()) {
-            size += molecules.size();
-        }
-        stringBuilder.append("# of molecules: ").append(size).append("\n\n");
-
-        if (size == 0)
-            return stringBuilder.toString(); // if database is empty, return early
-
-        // Print the list of molecules
-        stringBuilder.append("List of molecules: ").append("\n\n");
-        for (Integer atomCount : this.db.keySet()) {
-            ArrayList<Molecule> moleculesWithSameNumAtoms = this.db.get(atomCount);
-            for (Molecule molecule : moleculesWithSameNumAtoms) {
-                stringBuilder.append("Molecule name: ").append(molecule.moleculeName).append("\n");
-                stringBuilder.append("# of atoms: ").append(atomCount.toString()).append("\n\n");
-            }
-        }
-
-        // Print the largest and smallest molecules
-        int maxAtoms = Integer.MIN_VALUE;
-        int minAtoms = Integer.MAX_VALUE;
-        Molecule largestMolecule = null;
-        Molecule smallestMolecule = null;
-        for (Map.Entry<Integer, ArrayList<Molecule>> entry : db.entrySet()) {
-            int numAtoms = entry.getKey();
-            if (numAtoms > maxAtoms) {
-                maxAtoms = numAtoms;
-                largestMolecule = entry.getValue().get(0); // only print 1 representative molecule
-            }
-            if (numAtoms < minAtoms) {
-                minAtoms = numAtoms;
-                smallestMolecule = entry.getValue().get(0); // only print 1 representative molecule
-            }
-        }
-        stringBuilder.append("Smallest molecule: ").append(smallestMolecule.moleculeName).append("\n");
-        stringBuilder.append("Largest molecule: ").append(largestMolecule.moleculeName).append("\n\n");
-
-        return stringBuilder.toString();
-    }
 }
