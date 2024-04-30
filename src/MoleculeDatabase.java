@@ -193,6 +193,10 @@ public class MoleculeDatabase {
             Molecule result = dbMolecule.areMoleculesEqual(molecule);
             if (result != null) {
                 this.db.get(numAtoms).remove(dbMolecule);
+                if( this.db.get(numAtoms).size()==0 )
+                {
+                    this.db.remove(numAtoms); //prevents array index error when key becomes empty
+                }
                 return true; // successfully delete the molecule
             }
         }
