@@ -25,6 +25,7 @@ public class GUI extends JFrame {
     private JButton addProteinsButton;
     private JButton addMultipleMoleculesButton;
     private JTextField filePathField;
+    private JTextField pubChemField;
     private static MDB moleculeDb;
     private Socket clientSocket;
     private PrintWriter writer;
@@ -41,7 +42,7 @@ public class GUI extends JFrame {
         getContentPane().setBackground(Color.BLACK);
 
         // Create components
-        outputTextArea = new JTextArea(20, 50); // the text area for all outputs
+        outputTextArea = new JTextArea(50, 150); // bigger text area for all outputs
         outputTextArea.setBackground(Color.BLACK); // Set the background color of the text area
         outputTextArea.setForeground(Color.WHITE); // Set the text color
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
@@ -57,16 +58,22 @@ public class GUI extends JFrame {
         makeComplexButton = new JButton("Make Complex Molecules");
         addMultipleMoleculesButton = new JButton("Add Multiple Molecules");
         filePathField = new JTextField(20); // to show the file path
+        pubChemField = new JTextField(10); // start,end input
         JLabel filePathLabel = new JLabel("File/Folder Path:");
+        JLabel pubChemLabel = new JLabel("Start,End CID Indices:");
         filePathLabel.setForeground(Color.WHITE); // Set the text color
         filePathField.setBackground(Color.WHITE); // Set the background color of the text field
         filePathField.setForeground(Color.BLACK); // Set the text color
+        pubChemLabel.setForeground(Color.WHITE); // Set the text color
+        pubChemField.setBackground(Color.WHITE); // Set the background color of the text field
+        pubChemField.setForeground(Color.BLACK); // Set the text color
 
         // Create panels
         JPanel firstRowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         firstRowPanel.setBackground(Color.BLACK);
         firstRowPanel.add(chooseButton);
         firstRowPanel.add(addMoleculeButton);
+        // add delete button here
         firstRowPanel.add(findMoleculeButton);
         firstRowPanel.add(findSubgraphButton);
         firstRowPanel.add(displayMoleculeButton);
@@ -80,6 +87,9 @@ public class GUI extends JFrame {
         secondRowPanel.add(makeSimpleButton);
         secondRowPanel.add(makeComplexButton);
         secondRowPanel.add(statisticsButton);
+        secondRowPanel.add(downloadPubChemButton);
+        secondRowPanel.add(pubChemLabel);
+        secondRowPanel.add(pubChemField);
 
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
@@ -103,7 +113,7 @@ public class GUI extends JFrame {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setCurrentDirectory(lastOpenedDirectory[0]);
                 fileChooser.setDialogTitle("Choose File/Folder");
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES); // allow selecting files and directories
                 int result = fileChooser.showOpenDialog(GUI.this);
                 // If a file is selected, set its path in the molecule path field
                 if (result == JFileChooser.APPROVE_OPTION) {
@@ -121,7 +131,7 @@ public class GUI extends JFrame {
                 // Get the molecule path from the text field
                 // Input format for the file path is "start,end" where 'start' and 'end' are the starting and ending CID indices of molecules in PubChem
                 // For example, enter 12,24 to download molecules 12-24
-                String twoIndices = filePathField.getText();
+                String twoIndices = pubChemField.getText();
 
                 // Repurposed moleculePath should be in format "start,end"
                 String[] indexes = twoIndices.split(",");
@@ -321,7 +331,7 @@ public class GUI extends JFrame {
                 try {
                     moleculeDb.save("molecule.db"); // save the database
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    System.err.println("Error saving the database!");
                 }
             }
         });
@@ -338,7 +348,7 @@ public class GUI extends JFrame {
         try {
             initDb("molecule.db");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error loading the saved database!");
         }
 
     }
