@@ -142,7 +142,6 @@ public class GUI extends JFrame {
                     String start = indexes[0];
                     String end = indexes[1];
                     moleculeDb.downloadPubChem(start, end);
-                    outputTextArea.append("Download complete!" + "\n\n");
                 } else {
                     outputTextArea.append("Invalid Input" + "\n\n");
                 }
